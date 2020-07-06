@@ -11,6 +11,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import sigtuna.discord.classes.UserInfo;
+import sigtuna.discord.codeforces.UserSubmissionDatabase;
+
+import java.util.List;
+import java.util.Map;
 
 public class CodeForces {
 
@@ -110,6 +114,16 @@ public class CodeForces {
 
 		embed.setTitle(user);
 
+		user = user.toLowerCase();
+		Map<String, List<String>> solved = UserSubmissionDatabase.solved;
+		String solvedCount = "";
+		if(solved.containsKey(user)) {
+			List<String> solvedTag = solved.get(user);
+			solvedCount = String.valueOf(solvedTag.size());
+		}else{
+			solvedCount = "?";
+		}
+
 		if (ui == null) {
 
 			embed.addField("錯誤", "找不到資料");
@@ -138,7 +152,8 @@ public class CodeForces {
 				embed.addField("--------------------------", "--------------------------");
 				embed.addInlineField("目前分數", ui.rating + " ");
 				embed.addInlineField("目前階級", ui.rank + " ");
-
+				embed.addField("--------------------------", "--------------------------");
+				embed.addField( "解題數量", solvedCount);
 			}
 
 		}

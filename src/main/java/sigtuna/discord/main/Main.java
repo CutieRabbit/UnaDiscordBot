@@ -1,21 +1,28 @@
 package sigtuna.discord.main;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 
+import cfapi.main.CodeForcesProblemSet;
+import cfapi.main.CodeForcesStatus;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.entity.server.Server;
 
 import cfapi.main.CodeForcesProblemData;
+import org.jsoup.nodes.Document;
 import sigtuna.discord.codeforces.ConnectToDiscord;
 import sigtuna.discord.codeforces.DataBase;
+import sigtuna.discord.codeforces.UserSubmissionDatabase;
 import sigtuna.discord.event.JoinEvent;
 import sigtuna.discord.schedule.AutoCodeForcesDataBaseSave;
 import sigtuna.discord.schedule.CodeForcesRank;
 import sigtuna.discord.schedule.Contest;
+import sigtuna.discord.schedule.UpdateStatus;
 import sigtuna.discord.util.FileIO;
 
 public class Main {
@@ -43,17 +50,21 @@ public class Main {
 			Timer connectToDiscord = new Timer();
 			Timer autoCFDatabaseSave = new Timer();
 			Timer rank = new Timer();
+			Timer status = new Timer();
 //			Timer timerPhoto = new Timer();
 			
 			DataBase.lode();
 			initServerDataBase();
-			
+			initUserStatus();
+
 			contest.schedule(new Contest(), 0, 60000);
 			autoCFDatabaseSave.schedule(new AutoCodeForcesDataBaseSave(), 0, 300000);
 			connectToDiscord.schedule(new ConnectToDiscord(), 0, 30000);
-			rank.schedule(new CodeForcesRank(), 0, 1000*600);
-//			timerPhoto.schedule(new FixedTimeEvent(), 0, 1000);
-			
+			rank.schedule(new CodeForcesRank(), 0, 1000*3600);
+			status.schedule(new UpdateStatus(), 0, 1000*60);
+
+			makeProblemSet();
+
 			System.out.println("Timer ok.");
 			System.out.println("working...");
 			
@@ -73,6 +84,23 @@ public class Main {
 			String channelID = server.getTextChannels().get(0).getIdAsString();
 			String serverName = server.getName();
 			join.JoinServer(serverID, channelID, serverName);
+		}
+	}
+
+	public static void initUserStatus() {
+		for(String name : DataBase.name) {
+			UserSubmissionDatabase.load(name);
+		}
+	}
+
+	public static void makeProblemSet(){
+		try {
+			CodeForcesProblemSet problemSet = new CodeForcesProblemSet();
+			Document doc = problemSet.getDoc();
+			String text = doc.text();
+			problemList = CodeForcesProblemSet.make(text);
+		}catch (Exception e){
+			e.printStackTrace();
 		}
 	}
 	

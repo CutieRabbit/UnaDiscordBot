@@ -31,7 +31,6 @@ public class CodeForcesRank extends TimerTask {
 			Server server = Main.api.getServerById(534366668076613632L).get();
 			Role role = server.getRolesByName(roleNameArray[i]).get(0);
 			String name = roleNameArray[i].replaceAll("CF-", "").toLowerCase();
-			System.out.println(name);
 			roleName.put(name, role);
 		}
 	}

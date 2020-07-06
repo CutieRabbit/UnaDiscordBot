@@ -44,7 +44,6 @@ public class CodeFocresRegisterEvent implements MessageCreateListener {
 				message.getChannel().sendMessage("你已經在註冊的序列中了。");
 				return;
 			}
-			
 
 			int rand = (int) (Math.random() * 1000 + 1);
 			// int rand = 412;

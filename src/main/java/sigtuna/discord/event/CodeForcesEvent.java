@@ -2,10 +2,14 @@ package sigtuna.discord.event;
 
 import java.awt.Color;
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Scanner;
 
+import cfapi.main.CodeForcesProblemData;
+import cfapi.main.CodeForcesProblemSet;
+import cfapi.main.CodeForcesUser;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.permission.Role;

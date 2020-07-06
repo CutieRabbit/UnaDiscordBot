@@ -2,15 +2,15 @@ package sigtuna.discord.codeforces;
 
 import java.io.File;
 import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
+import java.lang.reflect.Array;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Scanner;
 
 public class DataBase {
 	
 	public static Map<String,String> map = new HashMap<String,String>();
-	
+	public static List<String> name = new ArrayList<>();
+
 	public static void lode() {
 		try {
 			File file = new File("CodeForcesAccount.txt");
@@ -19,6 +19,9 @@ public class DataBase {
 			while(cin.hasNext()) {
 				String uid = cin.next();
 				String cfa = cin.next();
+				if(!name.contains(cfa)){
+					name.add(cfa);
+				}
 				map.put(uid, cfa);
 			}
 			cin.close();
