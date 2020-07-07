@@ -60,7 +60,7 @@ public class Main {
 			contest.schedule(new Contest(), 0, 60000);
 			autoCFDatabaseSave.schedule(new AutoCodeForcesDataBaseSave(), 0, 300000);
 			connectToDiscord.schedule(new ConnectToDiscord(), 0, 30000);
-			rank.schedule(new CodeForcesRank(), 0, 1000*3600);
+			rank.schedule(new CodeForcesRank(), 0, 1000*10);
 			status.schedule(new UpdateStatus(), 0, 1000*60);
 
 			makeProblemSet();

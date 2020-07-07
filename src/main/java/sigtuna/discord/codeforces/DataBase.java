@@ -8,7 +8,8 @@ import java.util.Map.Entry;
 
 public class DataBase {
 	
-	public static Map<String,String> map = new HashMap<String,String>();
+	public static Map<String,String> UIDToAccount = new HashMap<String,String>();
+	public static Map<String,String> AccountToUID = new HashMap<String,String>();
 	public static List<String> name = new ArrayList<>();
 
 	public static void lode() {
@@ -22,7 +23,8 @@ public class DataBase {
 				if(!name.contains(cfa)){
 					name.add(cfa);
 				}
-				map.put(uid, cfa);
+				UIDToAccount.put(uid, cfa);
+				AccountToUID.put(cfa, uid);
 			}
 			cin.close();
 		}catch(Exception e) {
@@ -33,7 +35,7 @@ public class DataBase {
 		try {
 			File file = new File("CodeForcesAccount.txt");
 			PrintWriter pw = new PrintWriter(file);
-			for(Entry<String,String> entry : map.entrySet()) {
+			for(Entry<String,String> entry : UIDToAccount.entrySet()) {
 				pw.println(entry.getKey() + " " + entry.getValue());
 			}
 			pw.flush();

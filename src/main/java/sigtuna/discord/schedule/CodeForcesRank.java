@@ -1,13 +1,10 @@
 package sigtuna.discord.schedule;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 
+import cfapi.main.CodeForcesUser;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.server.ServerUpdater;
@@ -20,11 +17,13 @@ import sigtuna.discord.main.Main;
 
 public class CodeForcesRank extends TimerTask {
 
-	static Map<String, String> user = DataBase.map;
+	static Map<String, String> accountToUID = DataBase.AccountToUID;
+	List<String> accountList = new ArrayList<>();
 	String[] roleNameArray = { "CF-Newbie", "CF-Pupil", "CF-Specialist", "CF-Expert", "CF-Candidate Master",
 			"CF-Master", "CF-Grandmaster", "CF-International Master", "CF-International Grandmaster",
 			"CF-Legendary Grandmaster" };
 	Map<String, Role> roleName = new HashMap<String, Role>();
+	int index = 0;
 
 	public void setUpRole() {
 		for (int i = 0; i < roleNameArray.length; i++) {
@@ -37,53 +36,76 @@ public class CodeForcesRank extends TimerTask {
 
 	public void clearDrop() {
 		List<String> bin = new ArrayList<String>();
-		for (Entry<String, String> entry : user.entrySet()) {
+		for (Entry<String, String> entry : accountToUID.entrySet()) {
 			if (entry.getValue().equals("######")) {
 				bin.add(entry.getKey());
 			}
 		}
 		for (String str : bin) {
-			user.remove(str);
+			accountToUID.remove(str);
 		}
 	}
 
-	public void run() {
+	public void make(String account){
 		setUpRole();
-		Server server = Main.api.getServerById(534366668076613632L).get();
-		ServerUpdater serverUpdater = new ServerUpdater(server);
+		System.out.println(String.format("Update %s's rating group (%d/%d)", account, index+1, accountList.size()));
 		try {
-			for (Entry<String, String> entry : user.entrySet()) {
-				CodeForces cf = new CodeForces();
-				User user = Main.api.getUserById(entry.getKey()).get();				
+			Optional<Server> serverOptional = Main.api.getServerById(534366668076613632L);
+			Server server;
+
+			if(serverOptional.isPresent()){
+				server = serverOptional.get();
+			}else{
+				throw new NullPointerException("Cannot Find Such Server");
+			}
+
+			ServerUpdater serverUpdater = new ServerUpdater(server);
+
+			if(!account.equals("######")) {
+				CodeForcesUser accountData = new CodeForcesUser(account);
+
+				String uid = accountToUID.get(account);
+				User user = Main.api.getUserById(uid).get();
 				List<Role> roles = user.getRoles(server);
+				String rank = accountData.getRank().toLowerCase();
+				if(rank.equals("unrated")){
+					return;
+				}
+				Role rankRole = roleName.get(rank);
+				if (roles.contains(rankRole)) {
+					return;
+				}
 				for (String str : roleNameArray) {
 					Role role = server.getRolesByName(str).get(0);
-					if (roles.contains(role)) {
-//						System.out.println(user.getName() + " , " + user.getIdAsString() + " , " + role.getName());
+						if (roles.contains(role)) {
 						serverUpdater.removeRoleFromUser(user, role);
 					}
 				}
-				if (!entry.getValue().equals("######")) {
-					UserInfo info = cf.getUserData(entry.getValue());
-					if(info == null) continue;
-					String rank = info.rank;
-					if (rank.toLowerCase().equals("unrated")) {
-						continue;
-					}
-					serverUpdater.addRoleToUser(user, roleName.get(rank));
-//					System.out.println(user.getName() + " , " + user.getIdAsString() + " , " + roleName.get(rank).getName());
-				}
+				serverUpdater.addRoleToUser(user, roleName.get(rank));
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		clearDrop();
-		DataBase.save();
-		try {
+
+			clearDrop();
+			DataBase.save();
 			serverUpdater.update().get();
-		} catch (InterruptedException | ExecutionException e) {
-			// TODO Auto-generated catch block
+
+		}catch (Exception e){
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void run() {
+		accountList = new ArrayList<>();
+		for(Entry<String, String> entry : accountToUID.entrySet()){
+			String account = entry.getKey();
+			if(account.equals("######")){
+				continue;
+			}
+			accountList.add(account);
+		}
+		String account = accountList.get(index);
+		make(account);
+		index += 1;
+		index %= accountList.size();
 	}
 }

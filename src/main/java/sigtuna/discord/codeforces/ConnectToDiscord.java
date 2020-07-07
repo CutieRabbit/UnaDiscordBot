@@ -26,7 +26,7 @@ public class ConnectToDiscord extends TimerTask {
 					message.getChannel().sendMessage(fail_embed(data.cfAccount, data));
 					
 				} else {
-					DataBase.map.put(e.getKey(), data.cfAccount);
+					DataBase.UIDToAccount.put(e.getKey(), data.cfAccount);
 					DataBase.save();
 					message.getChannel().sendMessage(pass_embed(data.cfAccount, data));
 					UpdateStatus.make(data.cfAccount, map.size(),true);

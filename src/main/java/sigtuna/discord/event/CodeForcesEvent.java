@@ -44,8 +44,8 @@ public class CodeForcesEvent implements MessageCreateListener {
 				message.getChannel().sendMessage(cf.getUserEmbed(user));
 			} else if (array_command.length == 1) {
 				String userID = message.getAuthor().getIdAsString();
-				if (DataBase.map.containsKey(userID)) {
-					String CFAccount = DataBase.map.get(userID);
+				if (DataBase.UIDToAccount.containsKey(userID)) {
+					String CFAccount = DataBase.UIDToAccount.get(userID);
 					message.getChannel().sendMessage(cf.getUserEmbed(CFAccount));
 				} else {
 					EmbedBuilder embed = new EmbedBuilder();
