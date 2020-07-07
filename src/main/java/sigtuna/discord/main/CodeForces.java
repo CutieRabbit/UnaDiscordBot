@@ -65,12 +65,13 @@ public class CodeForces {
 				embed.addField("--------------------------", "--------------------------");
 				embed.addField("解題數量", solvedCount);
 
-				embed.setColor(Color.magenta);
-
 			}
+
+			embed.setColor(Color.magenta);
 
 		} catch (NoUserException e) {
 
+			embed.setTitle(user);
 			embed.setDescription("找不到使用者。");
 			embed.setColor(Color.RED);
 			e.printStackTrace();
