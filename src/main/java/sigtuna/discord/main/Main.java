@@ -40,19 +40,14 @@ public class Main {
 
 			api = new DiscordApiBuilder().setToken(token).login().join();
 
-			System.out.println("Login ok.");
-
 			EventRegister.register();
-
-			System.out.println("Event rigister ok.");
 
 			Timer contest = new Timer();
 			Timer connectToDiscord = new Timer();
 			Timer autoCFDatabaseSave = new Timer();
 			Timer rank = new Timer();
 			Timer status = new Timer();
-//			Timer timerPhoto = new Timer();
-			
+
 			DataBase.lode();
 			initServerDataBase();
 			initUserStatus();
@@ -63,13 +58,9 @@ public class Main {
 			rank.schedule(new CodeForcesRank(), 0, 1000*10);
 			status.schedule(new UpdateStatus(), 0, 1000*60);
 
-			makeProblemSet();
+			//makeProblemSet();
 
-			System.out.println("Timer ok.");
-			System.out.println("working...");
-			
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -93,7 +84,7 @@ public class Main {
 		}
 	}
 
-	public static void makeProblemSet(){
+	/*public static void makeProblemSet(){
 		try {
 			CodeForcesProblemSet problemSet = new CodeForcesProblemSet();
 			Document doc = problemSet.getDoc();
@@ -102,6 +93,6 @@ public class Main {
 		}catch (Exception e){
 			e.printStackTrace();
 		}
-	}
+	}*/
 	
 }

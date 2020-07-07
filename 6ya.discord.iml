@@ -27,5 +27,6 @@
     <orderEntry type="library" name="Maven: com.vdurmont:emoji-java:4.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.json:json:20170516" level="project" />
     <orderEntry type="library" name="Maven: joda-time:joda-time:2.10.2" level="project" />
+    <orderEntry type="library" name="Maven: com.ibm.icu:icu4j:4.8.1.1" level="project" />
   </component>
 </module>

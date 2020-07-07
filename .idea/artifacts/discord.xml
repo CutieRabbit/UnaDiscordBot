@@ -22,6 +22,7 @@
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-databind/2.9.3/jackson-databind-2.9.3.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/javacord/javacord-api/3.0.6/javacord-api-3.0.6.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/resources/CFAPI.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/ibm/icu/icu4j/4.8.1.1/icu4j-4.8.1.1.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

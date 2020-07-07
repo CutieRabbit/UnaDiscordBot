@@ -23,6 +23,7 @@ public class DataBase {
 				if(!name.contains(cfa)){
 					name.add(cfa);
 				}
+				cfa = cfa.toLowerCase();
 				UIDToAccount.put(uid, cfa);
 				AccountToUID.put(cfa, uid);
 			}
