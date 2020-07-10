@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 public class DataBase {
 	
 	public static Map<String,String> UIDToAccount = new HashMap<String,String>();
-	public static Map<String,String> AccountToUID = new HashMap<String,String>();
+
 	public static List<String> name = new ArrayList<>();
 
 	public static void lode() {
@@ -20,12 +20,14 @@ public class DataBase {
 			while(cin.hasNext()) {
 				String uid = cin.next();
 				String cfa = cin.next();
+				if(cfa.equals("######")){
+					continue;
+				}
 				if(!name.contains(cfa)){
 					name.add(cfa);
 				}
 				cfa = cfa.toLowerCase();
 				UIDToAccount.put(uid, cfa);
-				AccountToUID.put(cfa, uid);
 			}
 			cin.close();
 		}catch(Exception e) {
@@ -45,5 +47,17 @@ public class DataBase {
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
+	}
+	public void drop(String uid){
+		UIDToAccount.remove(uid);
+	}
+	public static String findAccount(String targetAccount){
+		for(Entry<String, String> entry : UIDToAccount.entrySet()){
+			String account = entry.getValue();
+			if(account.equals(targetAccount)){
+				return entry.getKey();
+			}
+		}
+		return null;
 	}
 }

@@ -15,13 +15,15 @@ import sigtuna.discord.codeforces.DataBase;
 import sigtuna.discord.main.CodeForces;
 import sigtuna.discord.main.Main;
 
+import javax.xml.crypto.Data;
+
 public class CodeForcesRank extends TimerTask {
 
-	static Map<String, String> accountToUID = DataBase.AccountToUID;
 	List<String> accountList = new ArrayList<>();
 	String[] roleNameArray = { "CF-Newbie", "CF-Pupil", "CF-Specialist", "CF-Expert", "CF-Candidate Master",
 			"CF-Master", "CF-Grandmaster", "CF-International Master", "CF-International Grandmaster",
 			"CF-Legendary Grandmaster" };
+
 	Map<String, Role> roleName = new HashMap<String, Role>();
 	int index = 0;
 
@@ -31,18 +33,6 @@ public class CodeForcesRank extends TimerTask {
 			Role role = server.getRolesByName(roleNameArray[i]).get(0);
 			String name = roleNameArray[i].replaceAll("CF-", "").toLowerCase();
 			roleName.put(name, role);
-		}
-	}
-
-	public void clearDrop() {
-		List<String> bin = new ArrayList<String>();
-		for (Entry<String, String> entry : accountToUID.entrySet()) {
-			if (entry.getValue().equals("######")) {
-				bin.add(entry.getKey());
-			}
-		}
-		for (String str : bin) {
-			accountToUID.remove(str);
 		}
 	}
 
@@ -64,7 +54,7 @@ public class CodeForcesRank extends TimerTask {
 			if(!account.equals("######")) {
 				CodeForcesUser accountData = new CodeForcesUser(account);
 
-				String uid = accountToUID.get(account);
+				String uid = DataBase.findAccount(account);
 				User user = Main.api.getUserById(uid).get();
 				List<Role> roles = user.getRoles(server);
 				String rank = accountData.getRank().toLowerCase();
@@ -84,7 +74,6 @@ public class CodeForcesRank extends TimerTask {
 				serverUpdater.addRoleToUser(user, roleName.get(rank));
 			}
 
-			clearDrop();
 			DataBase.save();
 			serverUpdater.update().get();
 
@@ -96,8 +85,8 @@ public class CodeForcesRank extends TimerTask {
 	@Override
 	public void run() {
 		accountList = new ArrayList<>();
-		for(Entry<String, String> entry : accountToUID.entrySet()){
-			String account = entry.getKey();
+		for(Entry<String, String> entry : DataBase.UIDToAccount.entrySet()){
+			String account = entry.getValue();
 			if(account.equals("######")){
 				continue;
 			}

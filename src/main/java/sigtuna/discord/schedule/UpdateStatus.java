@@ -33,5 +33,6 @@ public class UpdateStatus extends TimerTask {
             index %= size;
         }
         UserSubmissionDatabase.load(user);
+        UserSubmissionDatabase.makeACTime(user);
     }
 }

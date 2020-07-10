@@ -22,6 +22,7 @@ public class UserSubmissionDatabase {
     public static Map<String, List<CodeForcesSubmissionData>> map = new HashMap<>();
     public static Map<String, List<String>> solved = new HashMap<>();
     public static Map<String, Map<String, List<String>>> acTime = new HashMap<>();
+    public static Map<String, String> updateTime = new HashMap<>();
 
     public static void makeACTime(String name) throws NullPointerException{
         if(map.containsKey(name)) {
@@ -30,6 +31,9 @@ public class UserSubmissionDatabase {
             Collections.reverse(list);
             List<String> tag = new ArrayList<>();
             for (CodeForcesSubmissionData cfpd : list) {
+                if(!cfpd.getVerdict().equals("OK")){
+                    continue;
+                }
                 String problemID = cfpd.getProblemID();
                 if (!tag.contains(problemID)) {
                     String time = cfpd.getTime();
@@ -52,6 +56,8 @@ public class UserSubmissionDatabase {
         name = name.toLowerCase();
         try {
             File file = new File("UserData/" + name + "/Submission.json");
+            DateTime timeDate = new DateTime(file.lastModified());
+            String time = timeDate.toString("yyyy-MM-dd HH:mm:ss");
             Scanner cin = new Scanner(file);
             String text = "";
             while(cin.hasNextLine()) {
@@ -70,6 +76,7 @@ public class UserSubmissionDatabase {
             }
             System.out.println("make ACTime: " + name);
             solved.put(name, solvedList);
+            updateTime.put(name, time);
             map.put(name, list);
             makeACTime(name);
         } catch (Exception e) {
@@ -103,6 +110,7 @@ public class UserSubmissionDatabase {
         embed.setDescription(data);
         embed.addInlineField(String.format("%04d/%02d的總解題數量", year, month), total + "");
         embed.addInlineField(String.format("%04d/%02d的總解題平均", year, month), String.format("%.2f", total*1.0/day));
+        embed.setFooter("最後更新時間：" + updateTime.get(account));
         embed.setColor(Color.magenta);
 
         return embed;
@@ -135,5 +143,26 @@ public class UserSubmissionDatabase {
             data += "｜" + String.join("｜", list) + "｜" + "\n";
         }
         return data;
+    }
+
+    public static EmbedBuilder getUserSolved(String account, int year, int month, int day){
+        DateTime dateTime = new DateTime(year, month, day, 0, 0, 0);
+        String title = String.format("%s的今日解題記錄(%d/%d/%d)", account, year, month, day);
+        String format = dateTime.toString("yyyy-MM-dd");
+        String description = "";
+        if(!acTime.get(account).containsKey(format)){
+            description = "這天沒有解題紀錄。";
+        }else{
+            List<String> list = acTime.get(account).get(format);
+            description = String.join(",", list);
+        }
+        String footer = "最後更新時間：" + updateTime.get(account);
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setTitle(title);
+        embedBuilder.setDescription(description);
+        embedBuilder.setFooter(footer);
+        embedBuilder.setColor(Color.magenta);
+
+        return embedBuilder;
     }
 }

@@ -43,7 +43,7 @@ public class CodeFocresRegisterEvent implements MessageCreateListener {
 
 				String account = content_array[1];
 				String user = message.getAuthor().getIdAsString();
-				CodeForcesUser userData = new CodeForcesUser(user);
+				CodeForcesUser userData = new CodeForcesUser(account);
 
 				if (ConnectToDiscord.map.containsKey(user)) {
 					throw new CooldownException();

@@ -105,7 +105,7 @@ public class CodeForcesEvent implements MessageCreateListener {
 				String account = "";
 				String userID = message.getAuthor().getIdAsString();
 				TextChannel channel = message.getChannel();
-				int year = 0, month = 0;
+				int year = 0, month = 0, day = 0;
 				if (array_command.length == 1) {
 					if (!DataBase.UIDToAccount.containsKey(userID)) {
 						throw new EmbedException(channel, "錯誤", "你必須要註冊帳號才能使用<ac來速查自己的月解題記錄\n如果你沒有註冊帳號，你只能使用<ac <帳號>來查詢「已註冊帳號」的月解題記錄。");
@@ -117,7 +117,7 @@ public class CodeForcesEvent implements MessageCreateListener {
 					if (!UserSubmissionDatabase.acTime.containsKey(account)) {
 						throw new EmbedException(channel, "錯誤", String.format("帳號 %s 沒有在註冊資料庫中。", account));
 					}
-				}else if(array_command.length >= 4){
+				}else if(array_command.length == 4){
 					account = array_command[1];
 					account = account.toLowerCase();
 					year = Integer.parseInt(array_command[2]);
@@ -125,8 +125,15 @@ public class CodeForcesEvent implements MessageCreateListener {
 					if (!UserSubmissionDatabase.acTime.containsKey(account)) {
 						throw new EmbedException(channel, "錯誤", String.format("帳號 %s 沒有在註冊資料庫中。", account));
 					}
-				}else{
-					throw new EmbedException(channel, "錯誤", "指令錯誤\n格式<ac | <帳號> | <年> <月>\n例如：<ac Xuan 2020 7");
+				}else if(array_command.length == 5){
+					account = array_command[1];
+					account = account.toLowerCase();
+					year = Integer.parseInt(array_command[2]);
+					month = Integer.parseInt(array_command[3]);
+					day = Integer.parseInt(array_command[4]);
+					if (!UserSubmissionDatabase.acTime.containsKey(account)) {
+						throw new EmbedException(channel, "錯誤", String.format("帳號 %s 沒有在註冊資料庫中。", account));
+					}
 				}
 				DateTime dateTime = new DateTime();
 				if(year == 0){
@@ -135,7 +142,12 @@ public class CodeForcesEvent implements MessageCreateListener {
 				if(month == 0){
 					month = dateTime.getMonthOfYear();
 				}
-				EmbedBuilder embedBuilder = UserSubmissionDatabase.makeACData(account, year, month);
+				EmbedBuilder embedBuilder;
+				if(day == 0){
+					embedBuilder = UserSubmissionDatabase.makeACData(account, year, month);
+				}else{
+					embedBuilder = UserSubmissionDatabase.getUserSolved(account, year, month, day);
+				}
 				channel.sendMessage(embedBuilder);
 			}catch (EmbedException e){
 				e.print();

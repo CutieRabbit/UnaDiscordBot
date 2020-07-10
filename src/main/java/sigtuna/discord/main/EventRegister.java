@@ -2,11 +2,7 @@ package sigtuna.discord.main;
 
 import org.javacord.api.DiscordApi;
 
-import sigtuna.discord.event.CodeFocresRegisterEvent;
-import sigtuna.discord.event.CodeForcesEvent;
-import sigtuna.discord.event.JoinEvent;
-import sigtuna.discord.event.PhotoEvent;
-import sigtuna.discord.event.UnaEvent;
+import sigtuna.discord.event.*;
 
 public class EventRegister {
 	
@@ -19,6 +15,7 @@ public class EventRegister {
 		api.addMessageCreateListener(new CodeFocresRegisterEvent());
 		api.addMessageCreateListener(new PhotoEvent());
 		api.addServerJoinListener(new JoinEvent());
+		api.addMessageCreateListener(new NormalEvent());
 //		api.addReactionAddListener(new AddReactionEvent());
 		
 	}
