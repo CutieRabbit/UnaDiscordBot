@@ -64,10 +64,13 @@ public class CodeForces {
 				embed.addInlineField("目前階級", userData.getRank());
 				embed.addField("--------------------------", "--------------------------");
 				embed.addField("解題數量", solvedCount);
-
 			}
 
-			embed.setColor(Color.magenta);
+			if(UserSubmissionDatabase.userColor.containsKey(user)){
+				embed.setColor(UserSubmissionDatabase.userColor.get(user));
+			}else{
+				embed.setColor(Color.magenta);
+			}
 
 		} catch (NoUserException e) {
 

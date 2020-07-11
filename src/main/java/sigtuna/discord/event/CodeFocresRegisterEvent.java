@@ -150,7 +150,7 @@ public class CodeFocresRegisterEvent implements MessageCreateListener {
 					message.getChannel().sendMessage("已設定" + user.getMentionTag() + "的CF帳號為" + account);
 					DataBase.save();
 				} else {
-					message.getChannel().sendMessage("僅限於原作者" + owner + "使用使。");
+					message.getChannel().sendMessage("僅限於原作者" + owner + "使用。");
 				}
 			} catch (Exception ex) {
 				ex.printStackTrace();

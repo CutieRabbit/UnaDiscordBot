@@ -26,6 +26,7 @@ import org.joda.time.DateTime;
 import sigtuna.discord.codeforces.DataBase;
 import sigtuna.discord.codeforces.UserSubmissionDatabase;
 import sigtuna.discord.exception.EmbedException;
+import sigtuna.discord.function.CFChangeColor;
 import sigtuna.discord.main.CodeForces;
 import sigtuna.discord.util.ContestData;
 
@@ -151,6 +152,28 @@ public class CodeForcesEvent implements MessageCreateListener {
 				channel.sendMessage(embedBuilder);
 			}catch (EmbedException e){
 				e.print();
+			}
+		} else if (array_command[0].equalsIgnoreCase("<cf_changeColor") && array_command.length == 2){
+			try {
+				String userID = message.getAuthor().getIdAsString();
+				TextChannel channel = message.getChannel().asTextChannel().get();
+				if (!DataBase.UIDToAccount.containsKey(userID)) {
+					throw new EmbedException(channel, "錯誤", "你必須要註冊帳號才能設定自己的embed顏色。");
+				}
+				String account = DataBase.UIDToAccount.get(userID).toLowerCase();
+				String hex = array_command[1];
+				CFChangeColor cfChangeColor = new CFChangeColor();
+				cfChangeColor.run(channel, account, hex);
+				EmbedBuilder embedBuilder = new EmbedBuilder();
+				Color color = cfChangeColor.HEXToRGB(hex);
+				embedBuilder.setTitle("你已成功更換你的Embed顏色!");
+				embedBuilder.setDescription(String.format("user.embed.color = %s", hex));
+				embedBuilder.setColor(color);
+				channel.sendMessage(embedBuilder);
+			}catch (EmbedException e){
+				e.print();
+			}catch (IllegalArgumentException e){
+
 			}
 		}
 	}

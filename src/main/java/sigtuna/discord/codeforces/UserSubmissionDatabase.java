@@ -23,6 +23,7 @@ public class UserSubmissionDatabase {
     public static Map<String, List<String>> solved = new HashMap<>();
     public static Map<String, Map<String, List<String>>> acTime = new HashMap<>();
     public static Map<String, String> updateTime = new HashMap<>();
+    public static Map<String, Color> userColor = new HashMap<>();
 
     public static void makeACTime(String name) throws NullPointerException{
         if(map.containsKey(name)) {
@@ -111,8 +112,11 @@ public class UserSubmissionDatabase {
         embed.addInlineField(String.format("%04d/%02d的總解題數量", year, month), total + "");
         embed.addInlineField(String.format("%04d/%02d的總解題平均", year, month), String.format("%.2f", total*1.0/day));
         embed.setFooter("最後更新時間：" + updateTime.get(account));
-        embed.setColor(Color.magenta);
-
+        if(userColor.containsKey(account)){
+            embed.setColor(userColor.get(account));
+        }else{
+            embed.setColor(Color.magenta);
+        }
         return embed;
     }
     public static String formatACData(int year, int month, List<Integer> dayData){
@@ -161,8 +165,11 @@ public class UserSubmissionDatabase {
         embedBuilder.setTitle(title);
         embedBuilder.setDescription(description);
         embedBuilder.setFooter(footer);
-        embedBuilder.setColor(Color.magenta);
-
+        if(userColor.containsKey(account)){
+            embedBuilder.setColor(userColor.get(account));
+        }else{
+            embedBuilder.setColor(Color.magenta);
+        }
         return embedBuilder;
     }
 }
