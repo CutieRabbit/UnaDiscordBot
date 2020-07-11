@@ -56,7 +56,7 @@ public class Main {
 			autoCFDatabaseSave.schedule(new AutoCodeForcesDataBaseSave(), 0, 300000);
 			connectToDiscord.schedule(new ConnectToDiscord(), 0, 30000);
 			rank.schedule(new CodeForcesRank(), 0, 1000*10);
-			status.schedule(new UpdateStatus(), 0, 1000*60);
+			status.schedule(new UpdateStatus(), 0, 1000*15);
 
 			//makeProblemSet();
 
