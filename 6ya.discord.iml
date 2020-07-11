@@ -28,5 +28,6 @@
     <orderEntry type="library" name="Maven: org.json:json:20170516" level="project" />
     <orderEntry type="library" name="Maven: joda-time:joda-time:2.10.2" level="project" />
     <orderEntry type="library" name="Maven: com.ibm.icu:icu4j:4.8.1.1" level="project" />
+    <orderEntry type="library" name="JGraphix" level="project" />
   </component>
 </module>
