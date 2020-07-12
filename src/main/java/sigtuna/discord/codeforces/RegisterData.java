@@ -57,7 +57,7 @@ public class RegisterData {
 					ce = true;
 				}
 				if (contest_id.equals(String.valueOf(number))) {
-					same_contestID = true;
+						same_contestID = true;
 				}
 				if (problem_id.equals("A")) {
 					same_index = true;

@@ -15,7 +15,7 @@ public class HelpEvent implements MessageCreateListener {
         Message message = event.getMessage();
 
         if (message.isPrivateMessage()) return;
-        if (message.getAuthor().isYourself()) return;
+        if (!message.getAuthor().isUser()) return;
 
         String content = message.getContent();
         String[] commandArray = content.split(" ");

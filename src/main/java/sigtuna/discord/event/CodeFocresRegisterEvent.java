@@ -113,21 +113,6 @@ public class CodeFocresRegisterEvent implements MessageCreateListener {
 			DataBase.save();
 		}
 
-		if (content_array[0].equals("<cf_FRGU")) {
-			try {
-				String owner = Main.api.getOwner().get().getDiscriminatedName();
-				if (message.getAuthor().isBotOwner()) {
-					CodeForcesRank cfr = new CodeForcesRank();
-					cfr.run();
-					message.getChannel().sendMessage("force rating group ok :)");
-				} else {
-					message.getChannel().sendMessage("僅限於原作者" + owner + "使用。");
-				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-
 		if (content_array[0].equals("<cf_ForceReg")) {
 			try {
 				String owner = Main.api.getOwner().get().getDiscriminatedName();

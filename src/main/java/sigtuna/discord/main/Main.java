@@ -50,6 +50,7 @@ public class Main {
 
 			DataBase.lode();
 			initServerDataBase();
+			makeProblemSet();
 			initUserStatus();
 
 			contest.schedule(new Contest(), 0, 60000);
@@ -79,12 +80,13 @@ public class Main {
 	}
 
 	public static void initUserStatus() {
+		UserSubmissionDatabase.makeProblemRating();;
 		for(String name : DataBase.name) {
 			UserSubmissionDatabase.load(name);
 		}
 	}
 
-	/*public static void makeProblemSet(){
+	public static void makeProblemSet(){
 		try {
 			CodeForcesProblemSet problemSet = new CodeForcesProblemSet();
 			Document doc = problemSet.getDoc();
@@ -93,6 +95,6 @@ public class Main {
 		}catch (Exception e){
 			e.printStackTrace();
 		}
-	}*/
+	}
 	
 }
