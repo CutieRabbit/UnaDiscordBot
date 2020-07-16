@@ -16,7 +16,7 @@ public class EventRegister {
 		api.addServerJoinListener(new JoinEvent());
 		api.addMessageCreateListener(new NormalEvent());
 		api.addMessageCreateListener(new HelpEvent());
-
+		api.addReactionAddListener(new EmbedDeleteReactionEvent());
 	}
 
 }

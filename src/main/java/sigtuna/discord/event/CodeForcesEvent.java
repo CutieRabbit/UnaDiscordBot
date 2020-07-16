@@ -1,27 +1,16 @@
 package sigtuna.discord.event;
 
-import java.awt.Color;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.List;
-import java.util.Scanner;
-
-import cfapi.main.CodeForcesProblemData;
-import cfapi.main.CodeForcesProblemSet;
-import cfapi.main.CodeForcesUser;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.Message;
+import org.javacord.api.entity.message.MessageAuthor;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.listener.message.MessageCreateListener;
 import org.javacord.api.util.NonThrowingAutoCloseable;
-
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 import org.joda.time.DateTime;
 import sigtuna.discord.codeforces.DataBase;
 import sigtuna.discord.codeforces.ProblemSelect;
@@ -31,6 +20,14 @@ import sigtuna.discord.function.CFChangeColor;
 import sigtuna.discord.main.CodeForces;
 import sigtuna.discord.util.ContestData;
 
+import java.awt.*;
+import java.io.File;
+import java.io.PrintWriter;
+import java.util.List;
+import java.util.Optional;
+import java.util.Scanner;
+import java.util.concurrent.CompletableFuture;
+
 public class CodeForcesEvent implements MessageCreateListener {
 
 	@Override
@@ -38,17 +35,26 @@ public class CodeForcesEvent implements MessageCreateListener {
 
 		Message message = event.getMessage();
 		String command = message.getContent();
+		TextChannel channel = message.getChannel();
+		MessageAuthor messageAuthor = message.getAuthor();
 		String[] array_command = command.split(" ");
 
 		if (message.getAuthor().isYourself())
 			return;
+
 		CodeForces cf = new CodeForces();
+		Optional<User> userOptional = messageAuthor.asUser();
+		User user = null;
+
+		if(userOptional.isPresent()){
+			user = userOptional.get();
+		}
 
 		if (array_command[0].equals("<cf")) {
 
 			if (array_command.length == 2) {
-				String user = array_command[1];
-				message.getChannel().sendMessage(cf.getUserEmbed(user));
+				String userID = user.getIdAsString();
+				message.getChannel().sendMessage(cf.getUserEmbed(userID));
 			} else if (array_command.length == 1) {
 				String userID = message.getAuthor().getIdAsString();
 				if (DataBase.UIDToAccount.containsKey(userID)) {
@@ -59,7 +65,9 @@ public class CodeForcesEvent implements MessageCreateListener {
 					embed.setTitle("你目前無法使用此功能。");
 					embed.setDescription("你必須註冊帳號後，才能夠使用<cf指令速查你的帳號。\n如果你沒有註冊，你只能使用<cf <帳號>來查詢cf帳號。");
 					embed.setColor(Color.red);
-					message.getChannel().sendMessage(embed);
+
+					send(message, embed);
+
 				}
 			}
 
@@ -106,7 +114,6 @@ public class CodeForcesEvent implements MessageCreateListener {
 			try {
 				String account = "";
 				String userID = message.getAuthor().getIdAsString();
-				TextChannel channel = message.getChannel();
 				int year = 0, month = 0, day = 0;
 				boolean rating = false;
 				if (array_command.length == 1) {
@@ -168,14 +175,15 @@ public class CodeForcesEvent implements MessageCreateListener {
 				}else{
 					embedBuilder = UserSubmissionDatabase.getDayAC(account, year, month, day);
 				}
-				channel.sendMessage(embedBuilder);
+
+				send(message, embedBuilder);
+
 			}catch (EmbedException e){
 				e.print();
 			}
 		} else if (array_command[0].equalsIgnoreCase("<cf_changeColor") && array_command.length == 2){
 			try {
 				String userID = message.getAuthor().getIdAsString();
-				TextChannel channel = message.getChannel().asTextChannel().get();
 				if (!DataBase.UIDToAccount.containsKey(userID)) {
 					throw new EmbedException(channel, "錯誤", "你必須要註冊帳號才能設定自己的embed顏色。");
 				}
@@ -188,7 +196,9 @@ public class CodeForcesEvent implements MessageCreateListener {
 				embedBuilder.setTitle("你已成功更換你的Embed顏色!");
 				embedBuilder.setDescription(String.format("user.embed.color = %s", hex));
 				embedBuilder.setColor(color);
-				channel.sendMessage(embedBuilder);
+
+				send(message, embedBuilder);
+
 			}catch (EmbedException e){
 				e.print();
 			}catch (IllegalArgumentException e){
@@ -202,8 +212,23 @@ public class CodeForcesEvent implements MessageCreateListener {
 			int max = Integer.parseInt(array_command[2]);
 			ProblemSelect problemSelect = new ProblemSelect();
 			EmbedBuilder embedBuilder = problemSelect.getEmbed(min, max);
-			TextChannel channel = message.getChannel().asTextChannel().get();
-			channel.sendMessage(embedBuilder);
+			send(message, embedBuilder);
+		}
+	}
+
+	public void send(Message message, EmbedBuilder embed){
+		try {
+			TextChannel channel = message.getChannel();
+			MessageAuthor author = message.getAuthor();
+			Optional<User> user = author.asUser();
+			if(user.isPresent()) {
+				CompletableFuture<Message> messageable = channel.sendMessage(embed);
+				Message sendMessage = messageable.get();
+				EmbedDeleteReactionEvent.addRemoveEmoji(sendMessage, user.get());
+			}
+			message.delete();
+		}catch (Exception e){
+			e.printStackTrace();
 		}
 	}
 }
