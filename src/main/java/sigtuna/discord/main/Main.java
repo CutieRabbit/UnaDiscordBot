@@ -3,26 +3,24 @@ package sigtuna.discord.main;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Statement;
-import java.util.List;
-import java.util.Map;
-import java.util.Timer;
+import java.util.*;
 
 import cfapi.main.CodeForcesProblemSet;
 import cfapi.main.CodeForcesStatus;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
+import org.javacord.api.entity.channel.PrivateChannel;
 import org.javacord.api.entity.server.Server;
 
 import cfapi.main.CodeForcesProblemData;
+import org.javacord.api.entity.user.User;
 import org.jsoup.nodes.Document;
 import sigtuna.discord.codeforces.ConnectToDiscord;
 import sigtuna.discord.codeforces.DataBase;
+import sigtuna.discord.codeforces.ProblemSelect;
 import sigtuna.discord.codeforces.UserSubmissionDatabase;
 import sigtuna.discord.event.JoinEvent;
-import sigtuna.discord.schedule.AutoCodeForcesDataBaseSave;
-import sigtuna.discord.schedule.CodeForcesRank;
-import sigtuna.discord.schedule.Contest;
-import sigtuna.discord.schedule.UpdateStatus;
+import sigtuna.discord.schedule.*;
 import sigtuna.discord.util.FileIO;
 
 public class Main {
@@ -47,6 +45,7 @@ public class Main {
 			Timer autoCFDatabaseSave = new Timer();
 			Timer rank = new Timer();
 			Timer status = new Timer();
+			Timer updateDataBase = new Timer();
 
 			DataBase.lode();
 			initServerDataBase();
@@ -58,8 +57,15 @@ public class Main {
 			connectToDiscord.schedule(new ConnectToDiscord(), 0, 30000);
 			rank.schedule(new CodeForcesRank(), 0, 1000*10);
 			status.schedule(new UpdateStatus(), 0, 1000*15);
+			updateDataBase.schedule(new UpdateHandleDatabase(), 0, 1000*600);
 
-			//makeProblemSet();
+			Collection<PrivateChannel> collection = api.getPrivateChannels();
+			for(PrivateChannel privateChannel : collection){
+				User user = privateChannel.getRecipient();
+				String name = user.getName();
+				String id = privateChannel.getIdAsString();
+				System.out.println(name + ", " + id);
+			}
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -80,10 +86,11 @@ public class Main {
 	}
 
 	public static void initUserStatus() {
-		UserSubmissionDatabase.makeProblemRating();;
 		for(String name : DataBase.name) {
 			UserSubmissionDatabase.load(name);
+			UpdateStatus.updateHandle.add(name);
 		}
+		new ProblemSelect();
 	}
 
 	public static void makeProblemSet(){

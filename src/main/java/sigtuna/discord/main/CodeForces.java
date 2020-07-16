@@ -12,7 +12,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import sigtuna.discord.classes.UserInfo;
+import sigtuna.discord.classes.UserStatus;
 import sigtuna.discord.codeforces.UserSubmissionDatabase;
 
 import java.awt.*;
@@ -34,11 +34,10 @@ public class CodeForces {
 			embed.setTitle(user);
 
 			user = user.toLowerCase();
-			Map<String, List<String>> solved = UserSubmissionDatabase.solved;
 			String solvedCount = "";
-			if (solved.containsKey(user)) {
-				List<String> solvedTag = solved.get(user);
-				solvedCount = String.valueOf(solvedTag.size());
+			if (UserSubmissionDatabase.dataBaseContain(user)) {
+				UserStatus userStatus = UserSubmissionDatabase.getUserStatus(user);
+				solvedCount = String.valueOf(userStatus.getUserTotalSolved());
 			} else {
 				solvedCount = "?";
 			}

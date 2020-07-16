@@ -10,7 +10,6 @@ import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.server.ServerUpdater;
 import org.javacord.api.entity.user.User;
 
-import sigtuna.discord.classes.UserInfo;
 import sigtuna.discord.codeforces.DataBase;
 import sigtuna.discord.main.CodeForces;
 import sigtuna.discord.main.Main;

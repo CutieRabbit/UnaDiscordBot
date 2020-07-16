@@ -40,10 +40,6 @@ public class UnaEvent implements MessageCreateListener {
 			} else if (connectedMessage.contains("是不是") || connectedMessage.contains("484")) {
 				channel.sendMessage((int) (Math.random() * 2) == 0 ? "是" : "不是");
 				return;
-			} else if (connectedMessage.contains("讀什麼")) {
-				String[] list = {"英文","數學","專一","專二"};
-				channel.sendMessage(list[(int) (Math.random() * 4)]);
-				return;
 			}
 		}
 

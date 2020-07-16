@@ -24,6 +24,7 @@ import com.google.gson.JsonParser;
 
 import org.joda.time.DateTime;
 import sigtuna.discord.codeforces.DataBase;
+import sigtuna.discord.codeforces.ProblemSelect;
 import sigtuna.discord.codeforces.UserSubmissionDatabase;
 import sigtuna.discord.exception.EmbedException;
 import sigtuna.discord.function.CFChangeColor;
@@ -107,6 +108,7 @@ public class CodeForcesEvent implements MessageCreateListener {
 				String userID = message.getAuthor().getIdAsString();
 				TextChannel channel = message.getChannel();
 				int year = 0, month = 0, day = 0;
+				boolean rating = false;
 				if (array_command.length == 1) {
 					if (!DataBase.UIDToAccount.containsKey(userID)) {
 						throw new EmbedException(channel, "錯誤", "你必須要註冊帳號才能使用<ac來速查自己的月解題記錄\n如果你沒有註冊帳號，你只能使用<ac <帳號>來查詢「已註冊帳號」的月解題記錄。");
@@ -115,7 +117,7 @@ public class CodeForcesEvent implements MessageCreateListener {
 				}else if(array_command.length == 2){
 					account = array_command[1];
 					account = account.toLowerCase();
-					if (!UserSubmissionDatabase.acTime.containsKey(account)) {
+					if (!UserSubmissionDatabase.dataBaseContain(account)) {
 						throw new EmbedException(channel, "錯誤", String.format("帳號 %s 沒有在註冊資料庫中。", account));
 					}
 				}else if(array_command.length == 4){
@@ -123,17 +125,30 @@ public class CodeForcesEvent implements MessageCreateListener {
 					account = account.toLowerCase();
 					year = Integer.parseInt(array_command[2]);
 					month = Integer.parseInt(array_command[3]);
-					if (!UserSubmissionDatabase.acTime.containsKey(account)) {
+					if (!UserSubmissionDatabase.dataBaseContain(account)) {
 						throw new EmbedException(channel, "錯誤", String.format("帳號 %s 沒有在註冊資料庫中。", account));
 					}
-				}else if(array_command.length == 5){
-					account = array_command[1];
-					account = account.toLowerCase();
-					year = Integer.parseInt(array_command[2]);
-					month = Integer.parseInt(array_command[3]);
-					day = Integer.parseInt(array_command[4]);
-					if (!UserSubmissionDatabase.acTime.containsKey(account)) {
-						throw new EmbedException(channel, "錯誤", String.format("帳號 %s 沒有在註冊資料庫中。", account));
+				}else if(array_command.length >= 5){
+					if(array_command[4].equals("-day")) {
+						account = array_command[1];
+						account = account.toLowerCase();
+						year = Integer.parseInt(array_command[2]);
+						month = Integer.parseInt(array_command[3]);
+						day = Integer.parseInt(array_command[5]);
+						if (!UserSubmissionDatabase.dataBaseContain(account)) {
+							throw new EmbedException(channel, "錯誤", String.format("帳號 %s 沒有在註冊資料庫中。", account));
+						}
+					}else if(array_command[4].equals("-rating")){
+						account = array_command[1];
+						account = account.toLowerCase();
+						year = Integer.parseInt(array_command[2]);
+						month = Integer.parseInt(array_command[3]);
+						rating = true;
+						if (!UserSubmissionDatabase.dataBaseContain(account)) {
+							throw new EmbedException(channel, "錯誤", String.format("帳號 %s 沒有在註冊資料庫中。", account));
+						}
+					}else{
+						throw new EmbedException(channel, "錯誤", String.format("參數錯誤: %s。", array_command[5]));
 					}
 				}
 				DateTime dateTime = new DateTime();
@@ -145,9 +160,13 @@ public class CodeForcesEvent implements MessageCreateListener {
 				}
 				EmbedBuilder embedBuilder;
 				if(day == 0){
-					embedBuilder = UserSubmissionDatabase.makeACData(account, year, month);
+					if(!rating) {
+						embedBuilder = UserSubmissionDatabase.getMonthAC(account, year, month);
+					}else{
+						embedBuilder = UserSubmissionDatabase.getMonthACProblem(account, year, month);
+					}
 				}else{
-					embedBuilder = UserSubmissionDatabase.getUserSolved(account, year, month, day);
+					embedBuilder = UserSubmissionDatabase.getDayAC(account, year, month, day);
 				}
 				channel.sendMessage(embedBuilder);
 			}catch (EmbedException e){
@@ -175,6 +194,16 @@ public class CodeForcesEvent implements MessageCreateListener {
 			}catch (IllegalArgumentException e){
 
 			}
+		}
+
+		if(array_command[0].equalsIgnoreCase("<cf_makeProblemSelect")){
+			if(!message.getAuthor().isBotOwner()) return;
+			int min = Integer.parseInt(array_command[1]);
+			int max = Integer.parseInt(array_command[2]);
+			ProblemSelect problemSelect = new ProblemSelect();
+			EmbedBuilder embedBuilder = problemSelect.getEmbed(min, max);
+			TextChannel channel = message.getChannel().asTextChannel().get();
+			channel.sendMessage(embedBuilder);
 		}
 	}
 }

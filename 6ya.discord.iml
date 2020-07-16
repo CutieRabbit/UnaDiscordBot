@@ -12,6 +12,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="CFAPI" level="application" />
+    <orderEntry type="library" name="JGraphix" level="project" />
     <orderEntry type="library" name="Maven: org.javacord:javacord-api:3.0.6" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.javacord:javacord-core:3.0.6" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.squareup.okhttp3:okhttp:3.9.1" level="project" />
@@ -28,6 +29,6 @@
     <orderEntry type="library" name="Maven: org.json:json:20170516" level="project" />
     <orderEntry type="library" name="Maven: joda-time:joda-time:2.10.2" level="project" />
     <orderEntry type="library" name="Maven: com.ibm.icu:icu4j:4.8.1.1" level="project" />
-    <orderEntry type="library" name="JGraphix" level="project" />
+    <orderEntry type="library" name="Maven: CFAPI:CFAPI:0.0.1-SNAPSHOT" level="project" />
   </component>
 </module>

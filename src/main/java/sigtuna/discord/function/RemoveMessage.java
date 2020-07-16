@@ -6,10 +6,11 @@ import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.MessageSet;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 
+import java.util.Collections;
 import java.util.Optional;
 
 public class RemoveMessage {
-    public void clearMessage(Message message, int count){
+    public void clearMessage(Message message, int count, boolean forAll){
         Channel channel = message.getChannel();
         Optional<TextChannel> optionalTextChannel = channel.asTextChannel();
         TextChannel textChannel = null;
@@ -19,11 +20,16 @@ public class RemoveMessage {
         int cnt = 0;
         try {
             MessageSet set = textChannel.getMessages(count).get();
-            for(Message m : set){
-                if(m.getAuthor().isBotOwner() || m.getAuthor().isYourself()){
-                    cnt += 1;
-                    m.delete();
+            if(forAll == false) {
+                for (Message m : set) {
+                    if (m.getAuthor().isBotOwner()) {
+                        cnt += 1;
+                        m.delete();
+                    }
                 }
+            }else{
+                cnt = count;
+                set.deleteAll();
             }
         }catch (Exception e){
             e.printStackTrace();;

@@ -32,11 +32,12 @@ public class HelpEvent implements MessageCreateListener {
                     embedBuilder.addField("<cf | <account>", "查詢帳號的的CF資訊，若用戶已經綁定帳號，則可以用<cf來速查自己的資料。\n舉例：<cf Xuan");
                     embedBuilder.addField("<cf_handle <user>", "查詢「用戶」的的CF資訊，僅限於該用戶已經綁定帳號\n舉例：<cf_handle " + mentionTag);
                     embedBuilder.addField("<cfcontest", "查詢CF近期的競賽時間");
-                    embedBuilder.addField("<ac | <account> | <year> <month> | <day>", "查詢帳號的解題資料，僅限查詢已經綁定的帳號" +
+                    embedBuilder.addField("<ac | <account> | <year> <month> | <-rating/-day> | <day>", "查詢帳號的解題資料，僅限查詢已經綁定的帳號" +
                             "\n舉例：" +
                             "\n<ac Xuan 可以查詢Xuan的當月AC資料" +
                             "\n<ac Xuan 2020 07 可以查詢Xuan在2020年7月的AC資料" +
-                            "\n<ac Xuan 2020 07 11 可以查詢Xuan在2020年7月11的時候解掉了哪些題目");
+                            "\n<ac Xuan 2020 07 -day 11 可以查詢Xuan在2020年7月11的時候解掉了哪些題目" +
+                            "\n<ac Xuan 2020 07 -rating 可以查詢Xuan在2020年7月時解掉的題目(以題目rating)分類。");
                     embedBuilder.addField("<cf_changeColor <hex_color>", "更換使用者的embed顏色，僅限已經綁定帳號的使用者使用\n舉例：<cf_changeColor #FFFFFF");
                 } else if (commandArray[1].equalsIgnoreCase("-cfr")) {
                     embedBuilder.setColor(Color.magenta);

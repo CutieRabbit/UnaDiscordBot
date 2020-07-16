@@ -27,18 +27,26 @@ public class NormalEvent implements MessageCreateListener {
 
         TextChannel textChannel = message.getChannel();
 
-        if(split[0].equals(prefix + "<<") && split.length == 2){
+        if(split[0].equals(prefix + "<<")) {
             try {
                 MessageAuthor author = message.getAuthor();
                 if (author.isBotOwner()) {
                     message.delete();
-                    int count = Integer.parseInt(split[1]);
-                    RemoveMessage removeMessage = new RemoveMessage();
-                    removeMessage.clearMessage(message, count);
+                    if (split.length == 2) {
+                        int count = Integer.parseInt(split[1]);
+                        RemoveMessage removeMessage = new RemoveMessage();
+                        removeMessage.clearMessage(message, count, false);
+                    } else if (split.length == 3 && split[2].equalsIgnoreCase("--forall")) {
+                        int count = Integer.parseInt(split[1]);
+                        RemoveMessage removeMessage = new RemoveMessage();
+                        removeMessage.clearMessage(message, count, true);
+                    } else {
+                        textChannel.sendMessage("工三小，腦袋壞掉是不是？");
+                    }
                 } else {
                     throw new EmbedException(textChannel, "權限不足", "這個功能僅限Bot主人使用");
                 }
-            }catch (EmbedException e){
+            } catch (EmbedException e) {
                 e.print();
             }
         }

@@ -11,14 +11,12 @@ import org.javacord.api.entity.user.User;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.listener.message.MessageCreateListener;
 
-import sigtuna.discord.classes.UserIDParser;
 import sigtuna.discord.codeforces.ConnectToDiscord;
 import sigtuna.discord.codeforces.DataBase;
 import sigtuna.discord.codeforces.RegisterData;
 import sigtuna.discord.exception.CooldownException;
 import sigtuna.discord.main.CodeForces;
 import sigtuna.discord.main.Main;
-import sigtuna.discord.schedule.CodeForcesRank;
 import sigtuna.discord.schedule.UpdateStatus;
 
 public class CodeFocresRegisterEvent implements MessageCreateListener {
@@ -113,35 +111,6 @@ public class CodeFocresRegisterEvent implements MessageCreateListener {
 			DataBase.save();
 		}
 
-		if (content_array[0].equals("<cf_ForceReg")) {
-			try {
-				String owner = Main.api.getOwner().get().getDiscriminatedName();
-				if (message.getAuthor().isBotOwner()) {
-					User user = Main.api.getOwner().get();
-					String account = "unknown";
-					if (content_array.length == 3) {
-						user = Main.api.getUserById(content_array[1]).get();
-						account = content_array[2];
-						DataBase.UIDToAccount.put(UserIDParser.parser(content_array[1]), account);
-					} else if (content_array.length == 2) {
-						account = content_array[1];
-						DataBase.UIDToAccount.put(message.getAuthor().getIdAsString(), account);
-					} else {
-						message.getChannel().sendMessage("指令輸入錯誤，格式應為<cf_ForceReg [指定使用者] <帳號>，且必須為bot擁有者才能使用");
-						return;
-					}
-					DataBase.name.add(account);
-					UpdateStatus.make(account, DataBase.name.size(),true);
-					message.getChannel().sendMessage("已設定" + user.getMentionTag() + "的CF帳號為" + account);
-					DataBase.save();
-				} else {
-					message.getChannel().sendMessage("僅限於原作者" + owner + "使用。");
-				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-
 		if (content_array[0].equals("<cf_makeStatusQuery") && content_array.length == 2) {
 			if(!message.getAuthor().isBotOwner()) return;
 			String account = content_array[1];
@@ -152,6 +121,8 @@ public class CodeFocresRegisterEvent implements MessageCreateListener {
 				ioException.printStackTrace();
 			}
 		}
+
+
 		
 	}
 
