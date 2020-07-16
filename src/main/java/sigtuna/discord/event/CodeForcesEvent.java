@@ -5,6 +5,7 @@ import com.google.gson.JsonParser;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.MessageAuthor;
+import org.javacord.api.entity.message.embed.Embed;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.user.User;
@@ -51,24 +52,26 @@ public class CodeForcesEvent implements MessageCreateListener {
 		}
 
 		if (array_command[0].equals("<cf")) {
+			try {
+				EmbedBuilder embedBuilder =  null;
 
-			if (array_command.length == 2) {
-				String userID = user.getIdAsString();
-				message.getChannel().sendMessage(cf.getUserEmbed(userID));
-			} else if (array_command.length == 1) {
-				String userID = message.getAuthor().getIdAsString();
-				if (DataBase.UIDToAccount.containsKey(userID)) {
-					String CFAccount = DataBase.UIDToAccount.get(userID);
-					message.getChannel().sendMessage(cf.getUserEmbed(CFAccount));
-				} else {
-					EmbedBuilder embed = new EmbedBuilder();
-					embed.setTitle("你目前無法使用此功能。");
-					embed.setDescription("你必須註冊帳號後，才能夠使用<cf指令速查你的帳號。\n如果你沒有註冊，你只能使用<cf <帳號>來查詢cf帳號。");
-					embed.setColor(Color.red);
-
-					send(message, embed);
-
+				if (array_command.length == 2) {
+					String userID = user.getIdAsString();
+					embedBuilder = cf.getUserEmbed(userID);
+				} else if (array_command.length == 1) {
+					String userID = message.getAuthor().getIdAsString();
+					if (DataBase.UIDToAccount.containsKey(userID)) {
+						String CFAccount = DataBase.UIDToAccount.get(userID);
+						embedBuilder = cf.getUserEmbed(CFAccount);
+					} else {
+						throw new EmbedException(channel, "你目前無法使用此功能。", "你必須註冊帳號後，才能夠使用<cf指令速查你的帳號。\n如果你沒有註冊，你只能使用<cf <帳號>來查詢cf帳號。");
+					}
 				}
+
+				send(message, embedBuilder);
+
+			}catch (EmbedException e){
+				e.print();
 			}
 
 		} else if (array_command[0].equals("<cfcontest") && array_command.length == 1) {
