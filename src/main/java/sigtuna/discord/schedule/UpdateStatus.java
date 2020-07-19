@@ -1,6 +1,7 @@
 package sigtuna.discord.schedule;
 
 import cfapi.main.CodeForcesStatus;
+import org.joda.time.DateTime;
 import sigtuna.discord.codeforces.DataBase;
 import sigtuna.discord.codeforces.UserSubmissionDatabase;
 
@@ -15,13 +16,17 @@ public class UpdateStatus extends TimerTask {
     @Override
     public void run() {
         try {
-            List<String> name = makeList();
-            String user = name.get(index).toLowerCase();
-            int size = name.size();
-            make(user, size, false);
+            loadPeople();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void loadPeople() throws IOException {
+        List<String> name = makeList();
+        String user = name.get(index).toLowerCase();
+        int size = name.size();
+        make(user, size);
     }
 
     public List<String> makeList(){
@@ -32,15 +37,24 @@ public class UpdateStatus extends TimerTask {
         return list;
     }
 
-    public static void make(String user, int size, boolean handmade) throws IOException {
+    public static void make(String user, int size) throws IOException {
         List<String> name = DataBase.name;
-        System.out.println(String.format("Catch %s's Status (%d/%d)", user, index+1, size));
+        //System.out.println(String.format("Catch %s's Status (%d/%d)", user, index+1, size));
         CodeForcesStatus status = new CodeForcesStatus(user);
         status.save();
-        if(!handmade) {
-            index++;
-            index %= size;
-        }
         UserSubmissionDatabase.load(user);
+        index++;
+        index %= updateHandle.size();
+    }
+
+    public static String getLoadCompleteTime(){
+        DateTime dateTime = new DateTime();
+        dateTime = dateTime.plusSeconds(15 * updateHandle.size());
+        return dateTime.toString("yyyy/MM/dd HH:mm:ss");
+    }
+
+    public static String getLoadCompleteMiutes(){
+        int second = 15 * updateHandle.size();
+        return String.valueOf((int)Math.ceil(second*1.0/60));
     }
 }

@@ -34,17 +34,27 @@ public class CodeForces {
 			embed.setTitle(user);
 
 			user = user.toLowerCase();
-			String solvedCount = "";
+			String solvedCount = "?";
+
 			if (UserSubmissionDatabase.dataBaseContain(user)) {
 				UserStatus userStatus = UserSubmissionDatabase.getUserStatus(user);
 				solvedCount = String.valueOf(userStatus.getUserTotalSolved());
-			} else {
-				solvedCount = "?";
 			}
 
 			URL photo = userData.getTitlePhotoURL();
 			String photoURL = photo.toString();
 			String rank = userData.getRank();
+			String city = userData.getCity();
+			String organization = userData.getOrganization();
+			long maxRating = userData.getMaxRating();
+			String maxRank = userData.getMaxRank();
+			long rating = userData.getRating();
+
+			checkVaild(photoURL);
+			checkVaild(rank);
+			checkVaild(city);
+			checkVaild(organization);
+			checkVaild(maxRank);
 
 			embed.setThumbnail(photoURL);
 			embed.setDescription(rank);
@@ -65,11 +75,7 @@ public class CodeForces {
 				embed.addField("解題數量", solvedCount);
 			}
 
-			if(UserSubmissionDatabase.userColor.containsKey(user)){
-				embed.setColor(UserSubmissionDatabase.userColor.get(user));
-			}else{
-				embed.setColor(Color.magenta);
-			}
+			embed.setColor(UserSubmissionDatabase.userColor.getOrDefault(user, Color.magenta));
 
 		} catch (NoUserException e) {
 
@@ -84,6 +90,12 @@ public class CodeForces {
 
 		return embed;
 
+	}
+
+	public void checkVaild(String str) throws NullPointerException{
+		if(str.equalsIgnoreCase("")){
+			throw new NullPointerException();
+		}
 	}
 
 }

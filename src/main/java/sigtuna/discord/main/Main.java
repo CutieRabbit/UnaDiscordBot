@@ -56,16 +56,8 @@ public class Main {
 			autoCFDatabaseSave.schedule(new AutoCodeForcesDataBaseSave(), 0, 300000);
 			connectToDiscord.schedule(new ConnectToDiscord(), 0, 30000);
 			rank.schedule(new CodeForcesRank(), 0, 1000*10);
-			status.schedule(new UpdateStatus(), 0, 1000*15);
+			status.schedule(new UpdateStatus(), 0, 1000*3);
 			updateDataBase.schedule(new UpdateHandleDatabase(), 0, 1000*600);
-
-			Collection<PrivateChannel> collection = api.getPrivateChannels();
-			for(PrivateChannel privateChannel : collection){
-				User user = privateChannel.getRecipient();
-				String name = user.getName();
-				String id = privateChannel.getIdAsString();
-				System.out.println(name + ", " + id);
-			}
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

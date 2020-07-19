@@ -19,6 +19,8 @@ import sigtuna.discord.codeforces.UserSubmissionDatabase;
 import sigtuna.discord.exception.EmbedException;
 import sigtuna.discord.function.CFChangeColor;
 import sigtuna.discord.main.CodeForces;
+import sigtuna.discord.schedule.RemoveCooldown;
+import sigtuna.discord.schedule.UpdateStatus;
 import sigtuna.discord.util.ContestData;
 
 import java.awt.*;
@@ -57,7 +59,8 @@ public class CodeForcesEvent implements MessageCreateListener {
 
 				if (array_command.length == 2) {
 					String userID = user.getIdAsString();
-					embedBuilder = cf.getUserEmbed(userID);
+					String cfAccount = array_command[1];
+					embedBuilder = cf.getUserEmbed(cfAccount);
 				} else if (array_command.length == 1) {
 					String userID = message.getAuthor().getIdAsString();
 					if (DataBase.UIDToAccount.containsKey(userID)) {
@@ -209,13 +212,40 @@ public class CodeForcesEvent implements MessageCreateListener {
 			}
 		}
 
-		if(array_command[0].equalsIgnoreCase("<cf_makeProblemSelect")){
-			if(!message.getAuthor().isBotOwner()) return;
-			int min = Integer.parseInt(array_command[1]);
-			int max = Integer.parseInt(array_command[2]);
-			ProblemSelect problemSelect = new ProblemSelect();
-			EmbedBuilder embedBuilder = problemSelect.getEmbed(min, max);
-			send(message, embedBuilder);
+		if(array_command[0].equalsIgnoreCase("<mp")){
+			try {
+				EmbedBuilder embedBuilder = new EmbedBuilder();
+				if (array_command[1].equalsIgnoreCase("addUsers") && array_command.length == 3) {
+					String userSequence = array_command[2];
+					String userID = user.getIdAsString();
+					if(RemoveCooldown.isCooldown("mpa", userID)){
+						throw new EmbedException(channel, "冷卻中", "這個指令每10秒只能執行一次。");
+					}
+					if (ProblemSelect.checkSequenceVaild(userID, userSequence)) {
+						ProblemSelect.addHandleSequence(userSequence);
+						embedBuilder.setTitle("加入玩家讀取序列成功");
+						embedBuilder.setDescription("請等待一段時間，目前完整的序列讀取完成需要" + UpdateStatus.getLoadCompleteMiutes() + "分鐘");
+					} else {
+						throw new EmbedException(channel, "加入玩家讀取序列失敗", "請檢查是否有拼錯handle。");
+					}
+				} else if (array_command[1].equalsIgnoreCase("selectProblem") && array_command.length == 5){
+					int min = Integer.parseInt(array_command[2]);
+					int max = Integer.parseInt(array_command[3]);
+					int count = Integer.parseInt(array_command[4]);
+					ProblemSelect problemSelect = new ProblemSelect();
+					embedBuilder = problemSelect.getEmbed("", min, max, count);
+				} else if (array_command[1].equalsIgnoreCase("selectProblem") && array_command.length == 6){
+					int min = Integer.parseInt(array_command[2]);
+					int max = Integer.parseInt(array_command[3]);
+					int count = Integer.parseInt(array_command[4]);
+					String handleSequence = array_command[5];
+					ProblemSelect problemSelect = new ProblemSelect();
+					embedBuilder = problemSelect.getEmbed(handleSequence, min, max, count);
+				}
+				send(message, embedBuilder);
+			}catch (EmbedException e){
+				e.print();
+			}
 		}
 	}
 

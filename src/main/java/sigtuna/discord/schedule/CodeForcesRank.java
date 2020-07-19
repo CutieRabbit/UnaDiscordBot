@@ -37,7 +37,7 @@ public class CodeForcesRank extends TimerTask {
 
 	public void make(String account){
 		setUpRole();
-		System.out.println(String.format("Update %s's rating group (%d/%d)", account, index+1, accountList.size()));
+		//System.out.println(String.format("Update %s's rating group (%d/%d)", account, index+1, accountList.size()));
 		try {
 			Optional<Server> serverOptional = Main.api.getServerById(534366668076613632L);
 			Server server;

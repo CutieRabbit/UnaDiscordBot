@@ -7,4 +7,13 @@ public class Pair<T1,T2>{
 		this.key = key;
 		this.value = value;
 	}
+
+	@Override
+	public boolean equals(Object object){
+		if(object instanceof Pair){
+			Pair<T1,T2> pair = (Pair<T1,T2>) object;
+			return (pair.key == key && pair.value == value);
+ 		}
+		return false;
+	}
 }

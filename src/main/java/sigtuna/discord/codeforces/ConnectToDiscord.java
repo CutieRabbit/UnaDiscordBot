@@ -29,7 +29,7 @@ public class ConnectToDiscord extends TimerTask {
 					DataBase.UIDToAccount.put(e.getKey(), data.cfAccount);
 					DataBase.save();
 					message.getChannel().sendMessage(pass_embed(data.cfAccount, data));
-					UpdateStatus.make(data.cfAccount, map.size(),true);
+					UpdateStatus.updateHandle.add(data.cfAccount);
 				}
 				map.remove(e.getKey());
 			} catch (Exception e1) {

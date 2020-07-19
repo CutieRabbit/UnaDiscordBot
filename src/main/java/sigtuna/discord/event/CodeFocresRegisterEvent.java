@@ -111,17 +111,6 @@ public class CodeFocresRegisterEvent implements MessageCreateListener {
 			DataBase.save();
 		}
 
-		if (content_array[0].equals("<cf_makeStatusQuery") && content_array.length == 2) {
-			if(!message.getAuthor().isBotOwner()) return;
-			String account = content_array[1];
-			DataBase.name.add(account);
-			try {
-				UpdateStatus.make(account, DataBase.name.size(), true);
-			} catch (IOException ioException) {
-				ioException.printStackTrace();
-			}
-		}
-
 
 		
 	}
