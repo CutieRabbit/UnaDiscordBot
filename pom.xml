@@ -15,8 +15,38 @@
                     <target>8</target>
                 </configuration>
             </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>8</source>
+					<target>8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<archive>
+						<manifest>
+							<mainClass>sigtuna.discord.main.Main</mainClass> //改你的Main位置，包含package
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
         </plugins>
     </build>
+	<packaging>jar</packaging>
     <dependencies>
 		<dependency>
 			<groupId>org.javacord</groupId>
