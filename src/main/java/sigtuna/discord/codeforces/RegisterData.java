@@ -35,7 +35,6 @@ public class RegisterData {
 		String url = String.format("https://codeforces.com/api/user.status?handle=%s&from=1&count=15", cfAccount);
 		Connection conn = Jsoup.connect(url);
 		conn = conn.followRedirects(false);
-		conn = conn.validateTLSCertificates(false);
 		conn = conn.ignoreContentType(true);
 
 		String json = conn.get().text();

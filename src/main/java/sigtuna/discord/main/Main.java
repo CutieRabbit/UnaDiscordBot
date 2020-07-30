@@ -34,7 +34,7 @@ public class Main {
 
 		try {
 			
-			String token = new FileIO("token.txt").getScanner().next();
+			String token = args[1];
 
 			api = new DiscordApiBuilder().setToken(token).login().join();
 
@@ -59,8 +59,6 @@ public class Main {
 			status.schedule(new UpdateStatus(), 0, 1000*3);
 			updateDataBase.schedule(new UpdateHandleDatabase(), 0, 1000*600);
 
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
