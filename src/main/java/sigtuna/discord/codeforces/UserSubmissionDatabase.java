@@ -47,7 +47,6 @@ public class UserSubmissionDatabase {
         int median = userStatus.getMedian(ratingList);
         List<String> mode = userStatus.getMode(ratingList);
         String modeData = mode.size() == 0 ? "0" : String.join(",", mode);
-        String lastModify = userStatus.getLastModify();
         int day = userStatus.getMonthDayCount(year, month);
         Color color = userColor.getOrDefault(account, Color.magenta);
 
@@ -62,7 +61,7 @@ public class UserSubmissionDatabase {
         embed.addField("================", "================");
         embed.addInlineField("解題難度中位數", median + "");
         embed.addInlineField("解題難度眾數", modeData);
-        embed.setFooter("最後更新時間：" + lastModify);
+        embed.setTimestampToNow();
         embed.setColor(color);
 
         return embed;
@@ -76,7 +75,6 @@ public class UserSubmissionDatabase {
 
         String title = String.format("%s的今日解題記錄(%d/%d/%d)", account, year, month, day);
         String description = "";
-        String lastModify = userStatus.getLastModify();
         Color color = userColor.getOrDefault(account, Color.magenta);
 
         if(problemTag.size() == 0){
@@ -85,12 +83,11 @@ public class UserSubmissionDatabase {
             description = String.join(",", problemTag);
         }
 
-        String footer = "最後更新時間：" + lastModify;
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle(title);
         embedBuilder.setDescription(description);
-        embedBuilder.setFooter("最後更新時間：" + lastModify);
+        embedBuilder.setTimestampToNow();
         embedBuilder.setColor(color);
 
         return embedBuilder;
@@ -118,12 +115,11 @@ public class UserSubmissionDatabase {
         }
         String title = String.format("%s的月解題記錄(%d/%02d)", account, year, month);
         String description = String.format("總題數：%d", list.size());
-        String lastModify = userStatus.getLastModify();
         Color color = userColor.getOrDefault(account, Color.magenta);
 
         embedBuilder.setTitle(title);
         embedBuilder.setDescription(description);
-        embedBuilder.setFooter("最後更新時間：" + lastModify);
+        embedBuilder.setTimestampToNow();
         embedBuilder.setColor(color);
 
         return embedBuilder;

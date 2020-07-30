@@ -12,7 +12,6 @@ import java.util.*;
 public class UserStatus {
 
     String account = "";
-    String lastModify = "";
     List<CodeForcesSubmissionData> problemSubmission = new ArrayList<>();
     List<CodeForcesSubmissionData> acSubmission = new ArrayList<>();
     Map<String, List<CodeForcesSubmissionData>> dateToACSubmission = new HashMap<>();
@@ -36,13 +35,6 @@ public class UserStatus {
             e.printStackTrace();
         }
         return null;
-    }
-
-    public String getLastModify() {
-        File file = new File("UserData/" + account + "/Submission.json");
-        DateTime timeDate = new DateTime(file.lastModified());
-        String lastModifyTime = timeDate.toString("yyyy-MM-dd HH:mm:ss");
-        return lastModifyTime;
     }
 
     public List<CodeForcesSubmissionData> getAllSubmission(){
@@ -85,8 +77,8 @@ public class UserStatus {
 
     private void load(){
         try {
-            String text = getText();
-            lastModify = getLastModify();
+            CodeForcesStatus status = new CodeForcesStatus(account);
+            String text = status.getDoc().text();
             problemSubmission = CodeForcesStatus.make(text);
             acSubmission = getAcSubmission();
             makeDayToAC();

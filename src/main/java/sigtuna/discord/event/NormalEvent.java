@@ -4,14 +4,21 @@ import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.MessageAuthor;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
+import org.javacord.api.entity.permission.Role;
+import org.javacord.api.entity.permission.RoleBuilder;
 import org.javacord.api.entity.server.Server;
+import org.javacord.api.entity.user.User;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.listener.message.MessageCreateListener;
+import sigtuna.discord.codeforces.DataBase;
 import sigtuna.discord.exception.EmbedException;
 import sigtuna.discord.function.RemoveMessage;
 import sigtuna.discord.function.ServerInfo;
 import sigtuna.discord.main.Main;
 import sigtuna.discord.module.Remind;
+
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 public class NormalEvent implements MessageCreateListener {
 
@@ -61,6 +68,28 @@ public class NormalEvent implements MessageCreateListener {
         if(split[0].equalsIgnoreCase(prefix + "remind")){
             Remind remind = new Remind();
             remind.execute(event);
+        }
+
+        if(split[0].equalsIgnoreCase(prefix + "dev_addHandleTag")){
+            Map<String,String> UIDToAccount = DataBase.UIDToAccount;
+            Server server = Main.api.getServerById(534366668076613632L).get();
+            for(Map.Entry<String, String> entry : UIDToAccount.entrySet()){
+                User user = server.getMemberById(entry.getKey()).get();
+                Role role = null;
+                if(server.getRolesByName("H=" + entry.getValue()).size() == 0){
+                    RoleBuilder roleBuilder = server.createRoleBuilder();
+                    roleBuilder.setName("H=" + entry.getValue());
+                    roleBuilder.setMentionable(false);
+                    try {
+                        role = roleBuilder.create().get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                }else{
+                    role = server.getRolesByName("H=" + entry.getValue()).get(0);
+                }
+                user.addRole(role);
+            }
         }
     }
 }

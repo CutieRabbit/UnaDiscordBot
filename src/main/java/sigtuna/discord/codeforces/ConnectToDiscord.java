@@ -6,7 +6,6 @@ import java.util.TimerTask;
 
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
-import sigtuna.discord.schedule.UpdateStatus;
 
 public class ConnectToDiscord extends TimerTask {
 
@@ -29,7 +28,6 @@ public class ConnectToDiscord extends TimerTask {
 					DataBase.UIDToAccount.put(e.getKey(), data.cfAccount);
 					DataBase.save();
 					message.getChannel().sendMessage(pass_embed(data.cfAccount, data));
-					UpdateStatus.updateHandle.add(data.cfAccount);
 				}
 				map.remove(e.getKey());
 			} catch (Exception e1) {

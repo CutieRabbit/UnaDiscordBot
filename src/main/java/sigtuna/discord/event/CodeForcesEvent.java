@@ -5,7 +5,6 @@ import com.google.gson.JsonParser;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.MessageAuthor;
-import org.javacord.api.entity.message.embed.Embed;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.user.User;
@@ -14,13 +13,10 @@ import org.javacord.api.listener.message.MessageCreateListener;
 import org.javacord.api.util.NonThrowingAutoCloseable;
 import org.joda.time.DateTime;
 import sigtuna.discord.codeforces.DataBase;
-import sigtuna.discord.codeforces.ProblemSelect;
 import sigtuna.discord.codeforces.UserSubmissionDatabase;
 import sigtuna.discord.exception.EmbedException;
 import sigtuna.discord.function.CFChangeColor;
 import sigtuna.discord.main.CodeForces;
-import sigtuna.discord.schedule.RemoveCooldown;
-import sigtuna.discord.schedule.UpdateStatus;
 import sigtuna.discord.util.ContestData;
 
 import java.awt.*;
@@ -130,17 +126,11 @@ public class CodeForcesEvent implements MessageCreateListener {
 				}else if(array_command.length == 2){
 					account = array_command[1];
 					account = account.toLowerCase();
-					if (!UserSubmissionDatabase.dataBaseContain(account)) {
-						throw new EmbedException(channel, "錯誤", String.format("帳號 %s 沒有在註冊資料庫中。", account));
-					}
 				}else if(array_command.length == 4){
 					account = array_command[1];
 					account = account.toLowerCase();
 					year = Integer.parseInt(array_command[2]);
 					month = Integer.parseInt(array_command[3]);
-					if (!UserSubmissionDatabase.dataBaseContain(account)) {
-						throw new EmbedException(channel, "錯誤", String.format("帳號 %s 沒有在註冊資料庫中。", account));
-					}
 				}else if(array_command.length >= 5){
 					if(array_command[4].equals("-day")) {
 						account = array_command[1];
@@ -148,18 +138,12 @@ public class CodeForcesEvent implements MessageCreateListener {
 						year = Integer.parseInt(array_command[2]);
 						month = Integer.parseInt(array_command[3]);
 						day = Integer.parseInt(array_command[5]);
-						if (!UserSubmissionDatabase.dataBaseContain(account)) {
-							throw new EmbedException(channel, "錯誤", String.format("帳號 %s 沒有在註冊資料庫中。", account));
-						}
 					}else if(array_command[4].equals("-rating")){
 						account = array_command[1];
 						account = account.toLowerCase();
 						year = Integer.parseInt(array_command[2]);
 						month = Integer.parseInt(array_command[3]);
 						rating = true;
-						if (!UserSubmissionDatabase.dataBaseContain(account)) {
-							throw new EmbedException(channel, "錯誤", String.format("帳號 %s 沒有在註冊資料庫中。", account));
-						}
 					}else{
 						throw new EmbedException(channel, "錯誤", String.format("參數錯誤: %s。", array_command[5]));
 					}
@@ -171,7 +155,10 @@ public class CodeForcesEvent implements MessageCreateListener {
 				if(month == 0){
 					month = dateTime.getMonthOfYear();
 				}
+
 				EmbedBuilder embedBuilder;
+				UserSubmissionDatabase.load(account);
+
 				if(day == 0){
 					if(!rating) {
 						embedBuilder = UserSubmissionDatabase.getMonthAC(account, year, month);
@@ -209,42 +196,6 @@ public class CodeForcesEvent implements MessageCreateListener {
 				e.print();
 			}catch (IllegalArgumentException e){
 
-			}
-		}
-
-		if(array_command[0].equalsIgnoreCase("<mp")){
-			try {
-				EmbedBuilder embedBuilder = new EmbedBuilder();
-				if (array_command[1].equalsIgnoreCase("addUsers") && array_command.length == 3) {
-					String userSequence = array_command[2];
-					String userID = user.getIdAsString();
-					if(RemoveCooldown.isCooldown("mpa", userID)){
-						throw new EmbedException(channel, "冷卻中", "這個指令每10秒只能執行一次。");
-					}
-					if (ProblemSelect.checkSequenceVaild(userID, userSequence)) {
-						ProblemSelect.addHandleSequence(userSequence);
-						embedBuilder.setTitle("加入玩家讀取序列成功");
-						embedBuilder.setDescription("請等待一段時間，目前完整的序列讀取完成需要" + UpdateStatus.getLoadCompleteMiutes() + "分鐘");
-					} else {
-						throw new EmbedException(channel, "加入玩家讀取序列失敗", "請檢查是否有拼錯handle。");
-					}
-				} else if (array_command[1].equalsIgnoreCase("selectProblem") && array_command.length == 5){
-					int min = Integer.parseInt(array_command[2]);
-					int max = Integer.parseInt(array_command[3]);
-					int count = Integer.parseInt(array_command[4]);
-					ProblemSelect problemSelect = new ProblemSelect();
-					embedBuilder = problemSelect.getEmbed("", min, max, count);
-				} else if (array_command[1].equalsIgnoreCase("selectProblem") && array_command.length == 6){
-					int min = Integer.parseInt(array_command[2]);
-					int max = Integer.parseInt(array_command[3]);
-					int count = Integer.parseInt(array_command[4]);
-					String handleSequence = array_command[5];
-					ProblemSelect problemSelect = new ProblemSelect();
-					embedBuilder = problemSelect.getEmbed(handleSequence, min, max, count);
-				}
-				send(message, embedBuilder);
-			}catch (EmbedException e){
-				e.print();
 			}
 		}
 	}

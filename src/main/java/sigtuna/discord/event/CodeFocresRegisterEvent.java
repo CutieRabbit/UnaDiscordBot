@@ -7,7 +7,6 @@ import cfapi.main.CodeForcesUser;
 import cfapi.main.NoUserException;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
-import org.javacord.api.entity.user.User;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.listener.message.MessageCreateListener;
 
@@ -16,8 +15,6 @@ import sigtuna.discord.codeforces.DataBase;
 import sigtuna.discord.codeforces.RegisterData;
 import sigtuna.discord.exception.CooldownException;
 import sigtuna.discord.main.CodeForces;
-import sigtuna.discord.main.Main;
-import sigtuna.discord.schedule.UpdateStatus;
 
 public class CodeFocresRegisterEvent implements MessageCreateListener {
 

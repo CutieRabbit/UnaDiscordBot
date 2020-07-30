@@ -11,6 +11,8 @@ import org.javacord.api.entity.message.embed.EmbedBuilder;
 
 import cfapi.main.CodeForcesContest;
 import cfapi.main.CodeForcesContestData;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import sigtuna.discord.classes.Pair;
 
 
@@ -55,8 +57,10 @@ public class ContestData {
 	}
 	
 	public static String getTimeString(long second) {
-		SimpleDateFormat stf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-		return stf.format(new Date(second*1000));
+		second *= 1000;
+		DateTime time = new DateTime(second);
+		time = time.withZone(DateTimeZone.forOffsetHours(8));
+		return time.toString("yyyy-MM-dd HH:mm");
 	}
 	
 	public static EmbedBuilder getEmbed() {
