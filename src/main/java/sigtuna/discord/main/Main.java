@@ -34,7 +34,7 @@ public class Main {
 
 		try {
 			
-			String token = args[1];
+			String token = args[0];
 
 			api = new DiscordApiBuilder().setToken(token).login().join();
 
