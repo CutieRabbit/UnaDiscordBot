@@ -26,7 +26,7 @@ public class Main {
 
 		try {
 			
-			String token = "NDcyNDA4NDIwMzU2NDU2NDY4.W1sqoA.ETnBAHM_qV6GQyPNGsddlqRyMFA";
+			String token = args[0];
 
 			api = new DiscordApiBuilder().setToken(token).login().join();
 
