@@ -160,15 +160,21 @@ public class UserStatus {
             }
             array.add(temp);
         }
+        DateTime now = new DateTime();
         int startWeek = 1;
         int startDay = dateTime.getDayOfWeek();
         int day = 1;
-        for(int i = 0; month == dateTime.getMonthOfYear(); i++){
+        while(month == dateTime.getMonthOfYear()){
             day = dateTime.getDayOfMonth();
             startDay = dateTime.getDayOfWeek();
             if(startDay == 7) startWeek += 1;
             Transliterator tl = Transliterator.getInstance("Halfwidth-Fullwidth");
-            String data = tl.transliterate(String.valueOf(String.format("%02d", dayData.get(day))));
+            String data;
+            if(dateTime.getMillis() > now.getMillis()){
+                data = "－－";
+            }else {
+                data = tl.transliterate(String.valueOf(String.format("%02d", dayData.get(day))));
+            }
             array.get(startWeek).set(startDay%7, data);
             dateTime = dateTime.plusDays(1);
         }

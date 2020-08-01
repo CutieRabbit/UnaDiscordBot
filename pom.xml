@@ -47,7 +47,7 @@
 						<include>target/6ya.discord-0.0.1-SNAPSHOT-jar-with-dependencies.jar</include>
 					</includes>
 					<processTypes>
-						<worker>java -jar target/6ya.discord-0.0.1-SNAPSHOT-jar-with-dependencies.jar NDcyNDA4NDIwMzU2NDU2NDY4.W1sqoA.3WjuPMYzih-Xlrmcjb_rbV_iVdU</worker>
+						<worker>java -jar target/6ya.discord-0.0.1-SNAPSHOT-jar-with-dependencies.jar NDcyNDA4NDIwMzU2NDU2NDY4.W1sqoA.ETnBAHM_qV6GQyPNGsddlqRyMFA</worker>
 					</processTypes>
 				</configuration>
 			</plugin>
