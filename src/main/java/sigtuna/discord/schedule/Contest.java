@@ -5,18 +5,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Scanner;
-import java.util.TimerTask;
 
 import org.javacord.api.DiscordApi;
+import org.javacord.api.entity.channel.ServerChannel;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
+import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
 
 import com.google.gson.JsonArray;
@@ -40,11 +36,7 @@ public class Contest extends TimerTask {
 		try {
 			contest = new CodeForcesContest();
 			list = contest.getBeforeContest(false);
-			initMap();
-			initDataBase();
-			//debug_vituralContest();
 			checkOpenRegister();
-			saveDataBase();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -65,11 +57,11 @@ public class Contest extends TimerTask {
 		for (CodeForcesContestData cfcd : list) {
 			String ID = cfcd.getID();
 			long relative = Math.abs(cfcd.getRelativeTimeSeconds());
-			if (relative <= 86400 && (!openRegisterMentioned.containsKey(ID) || openRegisterMentioned.get(ID) == false)) {
+			if (relative <= 86400 && relative >= 86400-600 && (!openRegisterMentioned.containsKey(ID) || !openRegisterMentioned.get(ID))) {
 				openRegisterMentioned.put(cfcd.getID(), true);
 				openRegisterList.add(ID);
 			}
-			if (relative <= 600 && (!tenMinutesLeftMentioned.containsKey(ID) || tenMinutesLeftMentioned.get(ID) == false)) {
+			if (relative <= 600 && relative >= 0 && (!tenMinutesLeftMentioned.containsKey(ID) || !tenMinutesLeftMentioned.get(ID))) {
 				tenMinutesLeftMentioned.put(cfcd.getID(), true);
 				tenMinutesList.add(ID);
 			}
@@ -84,26 +76,38 @@ public class Contest extends TimerTask {
 
 	public void alert(String alertType, List<String> ID) throws FileNotFoundException {
 		DiscordApi api = Main.api;
-		for (Server server : api.getServers()) {
-			String ServerID = server.getIdAsString();
-			// Query MentionTag and ChannelID
-			File file = new File("./ServerBase/" + ServerID + "/ServerConfig.json");
-			Scanner cin = new Scanner(file);
-			String text = cin.next();
-			JsonObject object = new JsonParser().parse(text).getAsJsonObject();
-			if (object.get("CFMention").getAsString().equals("unset")) {
-				continue;
-			}
-			String mentionTag = object.get("CFMention").getAsString();
-			String channelID = object.get("CFContestChannel").getAsString();
-			TextChannel channel = api.getTextChannelById(channelID).get();
-			channel.sendMessage(mentionTag);
-			if (alertType.equals("OR")) {
-				channel.sendMessage(OpenRegisterEmbed(ID));
-			} else if (alertType.equals("TEN")) {
-				channel.sendMessage(TenMinutesLeftEmbed(ID));
-			}
-			cin.close();
+		Optional<Server> serverOptional = api.getServerById("534366668076613632");
+		Server server = null;
+		if (serverOptional.isPresent()) {
+			server = serverOptional.get();
+		} else {
+			throw new NullPointerException("在CF Alert中，找不到Server。");
+		}
+		List<Role> roles = server.getRolesByName("CodeForces");
+		if (roles.size() == 0) {
+			throw new NullPointerException("在CF Contest Alert中，找不到名為CodeForces的Role。");
+		}
+		Role role = roles.get(0);
+		Optional<ServerChannel> serverChannelOptional = server.getChannelById("534366668076613635");
+		ServerChannel serverChannel = null;
+		if (serverChannelOptional.isPresent()) {
+			serverChannel = serverChannelOptional.get();
+		} else {
+			throw new NullPointerException("在CF Contest Alert中，找不到播報頻道。");
+		}
+		TextChannel channel = null;
+		String mentionTag = role.getMentionTag();
+		Optional<TextChannel> textChannelOptional = serverChannel.asTextChannel();
+		if (textChannelOptional.isPresent()) {
+			channel = textChannelOptional.get();
+		} else {
+			throw new NullPointerException("在CF Contest Alert中，找不到播報頻道。");
+		}
+		channel.sendMessage(mentionTag);
+		if (alertType.equals("OR")) {
+			channel.sendMessage(OpenRegisterEmbed(ID));
+		} else if (alertType.equals("TEN")) {
+			channel.sendMessage(TenMinutesLeftEmbed(ID));
 		}
 	}
 	
@@ -149,59 +153,6 @@ public class Contest extends TimerTask {
 		embed.addField("競賽連結", "https://codeforces.com/contests/" + contestIDList);
 		embed.addField("競賽時間", sdf.format(date));
 		return embed;
-	}
-
-	public void saveDataBase() throws IOException {
-		JsonObject mainObject = new JsonObject();
-		JsonArray array = new JsonArray();
-		for (Entry<Integer, CodeForcesContestData> set : contest.getContestEntrySet()) {
-			int contestID = set.getKey();
-			String strID = String.valueOf(contestID);
-			CodeForcesContestData cfcd = set.getValue();
-			JsonObject object = new JsonObject();
-			object.addProperty("id", contestID);
-			object.addProperty("name", cfcd.getName());
-			object.addProperty("openRegisterMentioned", openRegisterMentioned.get(strID));
-			object.addProperty("tenMinutesLeftMentioned", tenMinutesLeftMentioned.get(strID));
-			array.add(object);
-		}
-		mainObject.add("contest", array);
-		File file = new File("./ContestPlay.json");
-		if (!file.exists()) {
-			file.createNewFile();
-		}
-		PrintWriter writer = new PrintWriter(file);
-		writer.println(mainObject.toString());
-		writer.close();
-	}
-
-	public void initDataBase() throws IOException {
-		File file = new File("./ContestPlay.json");
-		if (!file.exists()) {
-			saveDataBase();
-			return;
-		}
-		Scanner cin = new Scanner(file);
-		String text = cin.nextLine();
-		JsonObject mainObject = new JsonParser().parse(text).getAsJsonObject();
-		JsonArray array = mainObject.get("contest").getAsJsonArray();
-		for(int i = 0; i < array.size(); i++) {
-			JsonObject object = array.get(i).getAsJsonObject();
-			String ID = object.get("id").getAsString();
-			boolean openRegister = object.get("openRegisterMentioned").getAsBoolean();
-			boolean tenMinutesLeft = object.get("tenMinutesLeftMentioned").getAsBoolean();
-			openRegisterMentioned.put(ID, openRegister);
-			tenMinutesLeftMentioned.put(ID, tenMinutesLeft);
-		}
-		cin.close();
-	}
-	
-	public void initMap() {
-		for (Entry<Integer, CodeForcesContestData> set : contest.getContestEntrySet()) {
-			CodeForcesContestData cfcd = set.getValue();
-			openRegisterMentioned.put(cfcd.getID(),false);
-			tenMinutesLeftMentioned.put(cfcd.getID(),false);
-		}
 	}
 
 }
