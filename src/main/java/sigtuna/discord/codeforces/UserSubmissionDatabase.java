@@ -6,6 +6,7 @@ import cfapi.main.CodeForcesSubmissionData;
 import com.ibm.icu.text.Transliterator;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import sigtuna.discord.classes.Pair;
 import sigtuna.discord.classes.UserStatus;
 import sigtuna.discord.main.Main;
@@ -43,12 +44,15 @@ public class UserSubmissionDatabase {
 
         String data = userStatus.getMonthSolvedData(year, month);
         int total = submissionDataList.size();
-        Pair<Integer, Integer> minAndMax = userStatus.getMaxAndMin(ratingList);
-        int median = userStatus.getMedian(ratingList);
+        Pair<Object, Object> minAndMax = userStatus.getMaxAndMin(ratingList);
+        Object median = userStatus.getMedian(ratingList);
         List<String> mode = userStatus.getMode(ratingList);
-        String modeData = mode.size() == 0 ? "0" : String.join(",", mode);
+        Collections.sort(mode);
+        String modeData = mode.size() == 0 ? "－－" : String.join(",", mode);
         int day = userStatus.getMonthDayCount(year, month);
         Color color = userColor.getOrDefault(account, Color.magenta);
+        DateTime dateTime = DateTime.now();
+        dateTime = dateTime.withZone(DateTimeZone.forID("Asia/Taipei"));
 
         EmbedBuilder embed = new EmbedBuilder();
         embed.setTitle(account + String.format("的解題數量(%04d/%02d)", year, month));
@@ -61,7 +65,7 @@ public class UserSubmissionDatabase {
         embed.addField("================", "================");
         embed.addInlineField("解題難度中位數", median + "");
         embed.addInlineField("解題難度眾數", modeData);
-        embed.setTimestampToNow();
+        embed.setFooter(dateTime.toString("yyyy-MM-dd HH:MM:ss"));
         embed.setColor(color);
 
         return embed;

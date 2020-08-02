@@ -4,6 +4,7 @@ import cfapi.main.CodeForcesStatus;
 import cfapi.main.CodeForcesSubmissionData;
 import com.ibm.icu.text.Transliterator;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import java.io.File;
 import java.io.IOException;
@@ -101,21 +102,21 @@ public class UserStatus {
         return ratingList;
     }
 
-    public Pair<Integer, Integer> getMaxAndMin(List<Integer> list){
+    public Pair<Object, Object> getMaxAndMin(List<Integer> list){
         if(list.size() == 0){
-            return new Pair<> (0, 0);
+            return new Pair<> ("－－", "－－");
         }
         Collections.sort(list);
         int size = list.size();
         int min = list.get(0);
         int max = list.get(size-1);
-        Pair<Integer, Integer> pair = new Pair<>(min, max);
+        Pair<Object, Object> pair = new Pair<>(min, max);
         return pair;
     }
 
-    public int getMedian(List<Integer> list){
+    public Object getMedian(List<Integer> list){
         if(list.size() == 0){
-            return 0;
+            return "－－";
         }
         Collections.sort(list);
         int size = list.size();
@@ -151,7 +152,7 @@ public class UserStatus {
     }
 
     public String formatACData(int year, int month, List<Integer> dayData){
-        DateTime dateTime = new DateTime(year,month,1,0,0,0);
+        DateTime dateTime = new DateTime();
         List<List<String>> array = new ArrayList<>();
         for(int i = 0; i < 8; i++){
             List<String> temp = new ArrayList<>();
@@ -160,7 +161,9 @@ public class UserStatus {
             }
             array.add(temp);
         }
-        DateTime now = new DateTime();
+        dateTime.withZone(DateTimeZone.forID("Asia/Taipei"));
+        dateTime = dateTime.withDate(year, month, 1);
+        dateTime = dateTime.withTime(0,0,0, 0);
         int startWeek = 1;
         int startDay = dateTime.getDayOfWeek();
         int day = 1;
@@ -170,7 +173,7 @@ public class UserStatus {
             if(startDay == 7) startWeek += 1;
             Transliterator tl = Transliterator.getInstance("Halfwidth-Fullwidth");
             String data;
-            if(dateTime.getMillis() > now.getMillis()){
+            if(dateTime.getMillis() > System.currentTimeMillis()){
                 data = "－－";
             }else {
                 data = tl.transliterate(String.valueOf(String.format("%02d", dayData.get(day))));
