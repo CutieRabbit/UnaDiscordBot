@@ -46,10 +46,12 @@ public class EmbedDeleteReactionEvent implements ReactionAddListener {
                 return;
             }
             User messageAuthorUser = MessageIDToUser.get(messageID);
-            User clickedUser = event.getUser();
+            Optional<User> clicked_User = event.getUser();
+            User clickedUser = clicked_User.get();
             String messageAuthorUserID = messageAuthorUser.getIdAsString();
             String clickUserID = clickedUser.getIdAsString();
             if (clickUserID.equals(messageAuthorUserID) || clickedUser.isBotOwner()) {
+//                System.out.println("delele execute");
                 message.delete();
                 MessageIDToUser.remove(messageID);
             }

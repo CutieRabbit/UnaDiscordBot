@@ -1,27 +1,23 @@
 package sigtuna.discord.module;
 
-import java.awt.Color;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.event.message.MessageCreateEvent;
-
 import org.joda.time.DateTime;
-import sigtuna.discord.classes.DateFormat;
-import sigtuna.discord.exception.DateFormatException;
 import sigtuna.discord.main.Main;
+
+import java.awt.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Remind extends TimerTask{
 
 	TextChannel channel;
-	String channelID, userID, thing;
+	String userID, thing;
 	Date date;
 	DiscordApi api;
 

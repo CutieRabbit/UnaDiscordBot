@@ -25,7 +25,7 @@ public class ServerInfo {
         EmbedBuilder embed = new EmbedBuilder();
         embed.setTitle(server.getName());
         embed.setThumbnail(icon);
-        embed.addField("伺服器創立者", server.getOwner().getNicknameMentionTag());
+        embed.addField("伺服器創立者", server.getOwner().get().getNicknameMentionTag());
         embed.addInlineField("創立時間", getCreationTime(server));
         embed.addInlineField("伺服器人數", getServerMemberCount(server));
         embed.setFooter("伺服器ID: " + getServerID(server));

@@ -1,55 +1,43 @@
 package sigtuna.discord.schedule;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.Map.Entry;
-
+import cfapi.main.CodeForcesContest;
+import cfapi.main.CodeForcesContestData;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.ServerChannel;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
-import cfapi.main.CodeForcesContest;
-import cfapi.main.CodeForcesContestData;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import sigtuna.discord.main.Main;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class Contest extends TimerTask {
 
 	Map<String, Boolean> openRegisterMentioned = new HashMap<>();
 	Map<String, Boolean> tenMinutesLeftMentioned = new HashMap<>();
-	Map<String, CodeForcesContestData> debug_map = new HashMap<>();
 	List<CodeForcesContestData> list = new ArrayList<>();
+	public static List<CodeForcesContestData> debugContestList = new ArrayList<>();
 	CodeForcesContest contest;
 
 	@Override
-	public void run() {	
+	public void run() {
 		try {
 			contest = new CodeForcesContest();
 			list = contest.getBeforeContest(false);
+			list.addAll(debugContestList);
 			checkOpenRegister();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	public void debug_vituralContest() {
-		list.add(contest.getContestData(1310));
-		list.add(contest.getContestData(1314));
-		list.add(contest.getContestData(1315));
-		tenMinutesLeftMentioned.put("1310", false);
-		tenMinutesLeftMentioned.put("1314", false);
-		tenMinutesLeftMentioned.put("1315", false);
-	}
+
+
 
 	public void checkOpenRegister() throws FileNotFoundException {
 		List<String> openRegisterList = new ArrayList<String>();
@@ -110,26 +98,26 @@ public class Contest extends TimerTask {
 			channel.sendMessage(TenMinutesLeftEmbed(ID));
 		}
 	}
-	
+
 	public EmbedBuilder OpenRegisterEmbed(List<String> IDList) {
 		EmbedBuilder embed = new EmbedBuilder();
 		SimpleDateFormat sdf = new SimpleDateFormat();
-		Date date = null;
+		DateTime dateTime = null;
 		String contestInfo = "";
 		for(int i = 0; i < IDList.size(); i++) {
 			int ID = Integer.parseInt(IDList.get(i));
 			CodeForcesContestData contestData = contest.getContestData(ID);
-			if(debug_map.containsKey(IDList.get(i))) contestData = debug_map.get(IDList.get(i));
 			String contestName = contestData.getName();
 			String fieldKey = String.format("競賽註冊連結(%d)", i+1);
 			String descriptionLine = String.format("%d. %s\n", i+1, contestName);
 			contestInfo += descriptionLine;
 			embed.addField(fieldKey, "https://codeforces.com/contestRegistration/" + ID);
-			date = new Date(contestData.getStartTimeSeconds()*1000);
+			dateTime = new DateTime(contestData.getStartTimeSeconds() * 1000);
+			dateTime = dateTime.withZone(DateTimeZone.forID("Asia/Taipei"));
 		}
-		embed.setTitle("以下競賽只剩下24小時"); 
+		embed.setTitle("以下競賽只剩下24小時");
 		embed.setDescription(contestInfo);
-		embed.addField("競賽時間", sdf.format(date));
+		embed.addField("競賽時間", dateTime.toString("yyyy/MM/dd HH:mm:ss"));
 		return embed;
 	}
 
@@ -138,20 +126,20 @@ public class Contest extends TimerTask {
 		SimpleDateFormat sdf = new SimpleDateFormat();
 		String contestInfo = "";
 		String contestIDList = String.join(",", IDList);
-		Date date = null;
+		DateTime dateTime = null;
 		for(int i = 0; i < IDList.size(); i++) {
 			int ID = Integer.parseInt(IDList.get(i));
 			CodeForcesContestData contestData = contest.getContestData(ID);
-			if(debug_map.containsKey(IDList.get(i))) contestData = debug_map.get(IDList.get(i));
 			String contestName = contestData.getName();
 			String descriptionLine = String.format("%d. %s\n", i+1, contestName);
 			contestInfo += descriptionLine;
-			date = new Date(contestData.getStartTimeSeconds()*1000);
+			dateTime = new DateTime(contestData.getStartTimeSeconds() * 1000);
+			dateTime = dateTime.withZone(DateTimeZone.forID("Asia/Taipei"));
 		}
-		embed.setTitle("以下競賽將於10分鐘後開始"); 
+		embed.setTitle("以下競賽將於10分鐘後開始");
 		embed.setDescription(contestInfo);
 		embed.addField("競賽連結", "https://codeforces.com/contests/" + contestIDList);
-		embed.addField("競賽時間", sdf.format(date));
+		embed.addField("競賽時間", dateTime.toString("yyyy/MM/dd HH:mm:ss"));
 		return embed;
 	}
 

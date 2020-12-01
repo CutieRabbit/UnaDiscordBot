@@ -92,6 +92,7 @@ public class CodeForcesRank extends TimerTask {
 			accountList.add(account);
 		}
 		String account = accountList.get(index);
+//		System.out.println(account);
 		make(account);
 		index += 1;
 		index %= accountList.size();

@@ -2,7 +2,9 @@ package sigtuna.discord.event;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.net.URL;
 
+import cfapi.main.CodeForcesContestData;
 import cfapi.main.CodeForcesUser;
 import cfapi.main.NoUserException;
 import org.javacord.api.entity.message.Message;
@@ -10,11 +12,13 @@ import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.listener.message.MessageCreateListener;
 
+import org.joda.time.DateTime;
 import sigtuna.discord.codeforces.ConnectToDiscord;
 import sigtuna.discord.codeforces.DataBase;
 import sigtuna.discord.codeforces.RegisterData;
 import sigtuna.discord.exception.CooldownException;
 import sigtuna.discord.main.CodeForces;
+import sigtuna.discord.schedule.Contest;
 
 public class CodeFocresRegisterEvent implements MessageCreateListener {
 
@@ -108,7 +112,23 @@ public class CodeFocresRegisterEvent implements MessageCreateListener {
 			DataBase.save();
 		}
 
-
+		if (content_array[0].equals("<cf_makeTestContestAlert")){
+			//do Something.
+			DateTime now = DateTime.now();
+			DateTime contestStartTime = now.withSecondOfMinute(10);
+			String ID = "2147483647";
+			String name = "6ya's Poor Prepared Contest (Unrated, funny, Div.48763 preferred)";
+			String type = "這啥";
+			String phase = "這啥";
+			long duration = 5*60*60;
+			long StartTimeSeconds = now.getMillis() / 1000;
+			long RelativeTimeSeconds = contestStartTime.getMillis() / 1000;
+			boolean forzen = false;
+			boolean russiaOnly = false;
+			CodeForcesContestData testContestData = new CodeForcesContestData(ID, name, type, phase, duration, StartTimeSeconds, RelativeTimeSeconds, forzen, russiaOnly);
+			Contest.debugContestList.add(testContestData);
+			message.getChannel().sendMessage("已新增測試廣播排程，預計於10秒後廣播");
+		}
 		
 	}
 

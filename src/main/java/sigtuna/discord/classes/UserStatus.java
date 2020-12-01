@@ -22,22 +22,6 @@ public class UserStatus {
         load();
     }
 
-    private String getText(){
-        try {
-            File file = new File("UserData/" + account + "/Submission.json");
-            Scanner cin = new Scanner(file);
-            StringBuilder text = new StringBuilder();
-            while (cin.hasNextLine()) {
-                text.append(cin.nextLine());
-            }
-            cin.close();
-            return text.toString();
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     public List<CodeForcesSubmissionData> getAllSubmission(){
         return problemSubmission;
     }

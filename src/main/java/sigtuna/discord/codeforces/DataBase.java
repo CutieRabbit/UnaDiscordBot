@@ -2,21 +2,13 @@ package sigtuna.discord.codeforces;
 
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.permission.RoleBuilder;
-import org.javacord.api.entity.permission.RoleUpdater;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.server.ServerUpdater;
 import org.javacord.api.entity.user.User;
 import sigtuna.discord.main.Main;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.lang.reflect.Array;
-import java.lang.reflect.Member;
-import java.rmi.server.UID;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.concurrent.ExecutionException;
 
 public class DataBase {
 	
@@ -26,7 +18,7 @@ public class DataBase {
 
 	public static void load() {
 		try {
-			Optional<Server> serverOptional = Main.api.getServerById(534366668076613632L);
+			Optional<Server> serverOptional = Main.api.getServerById("534366668076613632");
 			Server server = null;
 			if(serverOptional.isPresent()){
 				server = serverOptional.get();
@@ -35,8 +27,10 @@ public class DataBase {
 			}
 			Collection<User> members = server.getMembers();
 			for(User user : members){
+//				System.out.println(user.getDisplayName(server));
 				List<Role> roles = user.getRoles(server);
 				if(roles.size() == 0) continue;
+//				System.out.println(user.getNickname(server));
 				for(Role role : roles){
 					String name = role.getName();
 					if(!name.contains("H=")){
@@ -44,7 +38,7 @@ public class DataBase {
 					}
 					String handle = name.substring(2);
 					String userID = user.getIdAsString();
-					System.out.println(handle);
+//					System.out.println(handle);
 					UIDToAccount.put(userID, handle);
 				}
 			}

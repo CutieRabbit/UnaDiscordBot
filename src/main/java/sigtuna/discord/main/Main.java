@@ -28,9 +28,11 @@ public class Main {
 			
 			String token = args[0];
 
-			api = new DiscordApiBuilder().setToken(token).login().join();
+			api = new DiscordApiBuilder().setToken(token).setAllIntents().login().join();
 
 			EventRegister.register();
+
+			System.out.println("UnaBot Start.");
 
 			Timer contest = new Timer();
 			Timer connectToDiscord = new Timer();
@@ -43,10 +45,10 @@ public class Main {
 			initServerDataBase();
 			makeProblemSet();
 
-			contest.schedule(new Contest(), 0, 60000);
+			contest.schedule(new Contest(), 0, 60*1000);
 			autoCFDatabaseSave.schedule(new AutoCodeForcesDataBaseSave(), 0, 300000);
 			connectToDiscord.schedule(new ConnectToDiscord(), 0, 30000);
-			rank.schedule(new CodeForcesRank(), 0, 1000*10);
+			rank.schedule(new CodeForcesRank(), 0, 1000*60);
 
 		} catch (Exception e) {
 			e.printStackTrace();

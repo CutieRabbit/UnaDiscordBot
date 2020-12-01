@@ -1,24 +1,27 @@
 package sigtuna.debug;
 
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 
-public class Debug{
+public class Debug {
     public static void main(String[] args) throws IOException {
-        Timer timer = new Timer();
-        timer.schedule(new UpdateClass(), 0, 1000*120);
-    }
-}
-class UpdateClass extends TimerTask{
+        Map<String,String> header = new HashMap<>();
+        Map<String,String> cookie = new HashMap<>();
+        cookie.put("sessionId", "it0FQ1mCmBvqqAjTJjN0FaPO+Bj91HKWt9qHKqVxqZZWGvkb794CvuygCNxVOGZ8");
+        cookie.put("reqFrom", "Portal");
+        cookie.put("userid", "109590031");
+        cookie.put("userType", "50");
+        Connection con = Jsoup.connect("https://aps.ntut.edu.tw/course/tw/courseSID.jsp");
+        con = con.headers(header);
+        con = con.ignoreContentType(true);
+        con = con.maxBodySize(0);
+        con = con.cookies(cookie);
 
-    @Override
-    public void run() {
-        //do update;
+        System.out.println(con.get().text());
     }
 }
