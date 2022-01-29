@@ -55,7 +55,7 @@ public class CodeForces {
 			embed.setDescription(rank);
 
 			embed.setUrl("https://codeforces.com/profile/" + cfAccount);
-			embed.addInlineField("國家", "unknown");
+			embed.addInlineField("國家", country);
 			embed.addInlineField("城市", city);
 			embed.addField("代表學校", organization);
 

@@ -17,8 +17,8 @@ import org.javacord.api.entity.server.Server;
 
 import cfapi.main.CodeForcesProblemData;
 import org.jsoup.nodes.Document;
-import sigtuna.discord.codeforces.ConnectToDiscord;
 import sigtuna.discord.codeforces.DataBase;
+import sigtuna.discord.codeforces.RegisterData;
 import sigtuna.discord.event.JoinEvent;
 import sigtuna.discord.schedule.*;
 
@@ -44,7 +44,6 @@ public class Main {
 			System.out.println("UnaBot Start.");
 
 			Timer contest = new Timer();
-			Timer connectToDiscord = new Timer();
 			Timer rank = new Timer();
 
 			initServerDataBase();
@@ -53,7 +52,6 @@ public class Main {
 			makeProblemSet();
 
 			contest.schedule(new Contest(), 0, 60*1000);
-			connectToDiscord.schedule(new ConnectToDiscord(), 0, 30000);
 			rank.schedule(new CodeForcesRank(), 0, 1000*15);
 
 		} catch (Exception e) {

@@ -13,11 +13,11 @@ import com.google.gson.JsonParser;
 
 public class RegisterData {
 
-	Message message;
-	String user;
-	String cfAccount;
-	String randomString;
-	long time;
+	public Message message;
+	public String user;
+	public String cfAccount;
+	public String randomString;
+	public long time;
 
 	public RegisterData(String user, String cfAccount, String randomString, Message message, long time) {
 		this.user = user;

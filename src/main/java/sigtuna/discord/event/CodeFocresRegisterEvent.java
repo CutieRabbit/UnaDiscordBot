@@ -2,36 +2,31 @@ package sigtuna.discord.event;
 
 import java.awt.Color;
 import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import cfapi.main.CodeForcesContestData;
 import cfapi.main.CodeForcesUser;
 import cfapi.main.NoUserException;
 import com.google.cloud.firestore.DocumentSnapshot;
-import com.google.cloud.firestore.QuerySnapshot;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
-import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.listener.message.MessageCreateListener;
 
-import org.joda.time.DateTime;
 import sigtuna.discord.classes.RandomStringGenerate;
-import sigtuna.discord.codeforces.ConnectToDiscord;
 import sigtuna.discord.codeforces.DataBase;
 import sigtuna.discord.codeforces.RegisterData;
-import sigtuna.discord.exception.CooldownException;
 import sigtuna.discord.main.CodeForces;
 import sigtuna.discord.main.Main;
-import sigtuna.discord.schedule.Contest;
 import sigtuna.discord.util.FuncEmbedBuilder;
 
 public class CodeFocresRegisterEvent implements MessageCreateListener {
+
+	public static HashMap<String, RegisterData> map = new HashMap<>();
 
 	@Override
 	public void onMessageCreate(MessageCreateEvent e) {
@@ -44,7 +39,7 @@ public class CodeFocresRegisterEvent implements MessageCreateListener {
 			return;
 
 		Optional<User> userOptional = message.getUserAuthor();
-		if(!userOptional.isPresent()){
+		if (!userOptional.isPresent()) {
 			return;
 		}
 
@@ -52,35 +47,117 @@ public class CodeFocresRegisterEvent implements MessageCreateListener {
 
 		if (content_array[0].equals(Main.prefix + "reg")) {
 
-			FuncEmbedBuilder embed = new FuncEmbedBuilder(user);
-			embed.setTitle("註冊");
-			embed.setDescription("發生未知的錯誤，請通知作者。");
-
 			try {
+
+				if (content_array.length == 1) {
+					throw new ArithmeticException("用法： <reg <handle>");
+				}
 
 				String account = content_array[1];
 				String userID = user.getIdAsString();
 
-				if (ConnectToDiscord.map.containsKey(userID)) {
-					throw new CooldownException();
+				Pattern nameVerification = Pattern.compile("[0-9A-Za-z\\_\\-\\.]+");
+				Matcher matcher = nameVerification.matcher(account);
+
+				if (!matcher.matches()) {
+					throw new ArithmeticException("請輸入正確的 Handle");
 				}
+
+				new CodeForcesUser(content_array[1]);
 
 				String generatedString = RandomStringGenerate.randomString(10);
 
 				long time = System.currentTimeMillis() / 1000;
-				ConnectToDiscord.map.put(userID, new RegisterData(userID, account, generatedString, message, time));
+				map.put(userID, new RegisterData(userID, account, generatedString, message, time));
 
-				embed.setDescription("請在1分鐘內，將自己的 CodeForces FirstName 改成以下的驗證碼");
+				FuncEmbedBuilder embed = new FuncEmbedBuilder(user);
+				embed.setTitle("註冊");
+				embed.setDescription("Hello " + content_array[1] + "! \n\n 請在1分鐘內，將自己的 CodeForces FirstName 改成以下的驗證碼 \n 輸入完成後，請輸入 <reg_veri 來進行驗證程序。");
+				embed.addField("傳送門", "https://codeforces.com/settings/social");
 				embed.addField("驗證碼", generatedString);
 				embed.setColor(Color.orange);
 
-			} catch (CooldownException exception){
+				message.getChannel().sendMessage(embed);
+
+			} catch (ArithmeticException ex){
+
+				FuncEmbedBuilder embed = new FuncEmbedBuilder(user);
 				embed.setTitle("註冊");
-				embed.setDescription("你已經在註冊的序列中了，若你想要放棄註冊，請等待註冊環節自然失敗。");
+				embed.setDescription(ex.getMessage());
 				embed.setColor(Color.RED);
+				message.getChannel().sendMessage(embed);
+
+			} catch (NoUserException nue){
+
+				FuncEmbedBuilder embed = new FuncEmbedBuilder(user);
+				embed.setTitle("註冊");
+				embed.setDescription("沒有這個使用者。");
+				embed.setColor(Color.RED);
+				message.getChannel().sendMessage(embed);
+
+			} catch (IOException ex) {
+
+				FuncEmbedBuilder embed = new FuncEmbedBuilder(user);
+				embed.setTitle("註冊");
+				embed.setDescription("出現了系統問題，請通知開發者。");
+				embed.setColor(Color.RED);
+				message.getChannel().sendMessage(embed);
+
+				ex.printStackTrace();
 			}
 
-			message.getChannel().sendMessage(embed);
+		}else if (content_array[0].equals("<reg_veri")) {
+
+			String userID = user.getIdAsString();
+
+			if(!map.containsKey(userID)){
+				FuncEmbedBuilder embed = new FuncEmbedBuilder(user);
+				embed.setTitle("註冊");
+				embed.setDescription("你沒有任何的註冊請求。");
+				embed.setColor(Color.RED);
+				message.getChannel().sendMessage(embed);
+				map.remove(userID);
+			}
+
+			RegisterData data = map.get(userID);
+
+			try {
+
+				long now = System.currentTimeMillis() / 1000;
+
+				if (Math.abs(now - data.time) > 60) {
+					FuncEmbedBuilder embed = new FuncEmbedBuilder(user);
+					embed.setTitle("註冊");
+					embed.setDescription("逾期的驗證。");
+					embed.setColor(Color.RED);
+					message.getChannel().sendMessage(embed);
+					map.remove(userID);
+					return;
+				}
+
+				boolean success = data.verificate_pass();
+
+				if (!success) {
+
+					message.getChannel().sendMessage(fail_embed(data.cfAccount, user, data));
+
+				} else {
+
+					Map<String, Object> userData = new HashMap<>();
+					userData.put("CodeForcesAccount", data.cfAccount);
+					Main.firestore.collection("user").document(data.user).set(userData);
+					DataBase.UIDToAccount.put(data.user, data.cfAccount);
+					message.getChannel().sendMessage(pass_embed(data.cfAccount, user, data));
+
+				}
+
+				map.remove(userID);
+
+			} catch (Exception e1) {
+				message.getChannel().sendMessage(fail_embed(data.cfAccount, user, data));
+				map.remove(userID);
+				e1.printStackTrace();
+			}
 
 		}else if (content_array[0].equals("<cf_handle")) {
 
@@ -110,6 +187,22 @@ public class CodeFocresRegisterEvent implements MessageCreateListener {
 		}
 
 		message.delete();
+	}
+
+	public EmbedBuilder pass_embed(String account, User user, RegisterData d) {
+		FuncEmbedBuilder embed = new FuncEmbedBuilder(user);
+		embed.setTitle("Registed! " + account);
+		embed.setDescription("註冊成功!");
+		embed.setColor(Color.GREEN);
+		return embed;
+	}
+
+	public EmbedBuilder fail_embed(String account, User user, RegisterData d) {
+		FuncEmbedBuilder embed = new FuncEmbedBuilder(user);
+		embed.setTitle("註冊失敗 - " + account);
+		embed.setDescription("註冊失敗，請確認 handle 是否正確以及有沒有正確更改 FirstName");
+		embed.setColor(Color.RED);
+		return embed;
 	}
 
 }

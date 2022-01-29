@@ -38,12 +38,10 @@ public class HelpEvent implements MessageCreateListener {
                             "\n<ac Xuan 2020 07 可以查詢Xuan在2020年7月的AC資料" +
                             "\n<ac Xuan 2020 07 -day 11 可以查詢Xuan在2020年7月11的時候解掉了哪些題目" +
                             "\n<ac Xuan 2020 07 -rating 可以查詢Xuan在2020年7月時解掉的題目(以題目rating)分類。");
-                    embedBuilder.addField("<cf_changeColor <hex_color>", "更換使用者的embed顏色，僅限已經綁定帳號的使用者使用\n舉例：<cf_changeColor #FFFFFF");
+                    embedBuilder.addField("<cf_changeColor <hex_color>", "[未完成] 更換使用者的embed顏色，僅限已經綁定帳號的使用者使用\n舉例：<cf_changeColor #FFFFFF");
                 } else if (commandArray[1].equalsIgnoreCase("-cfr")) {
                     embedBuilder.setColor(Color.magenta);
-                    embedBuilder.addField("<cf_reg <account>", "綁定CF帳號至Una的資料庫\n舉例：<cf_reg Xuan");
-                    embedBuilder.addField("<cf_regdrop", "放棄當前的註冊程序，僅限目前在註冊程序的使用者使用");
-                    embedBuilder.addField("<cfdrop", "解除綁定帳號，僅限於已經綁定帳號的使用者使用");
+                    embedBuilder.addField("<reg <account>", "綁定CF帳號至Una的資料庫\n舉例：<reg Xuan");
                 } else {
                     embedBuilder.setColor(Color.red);
                     embedBuilder.setDescription("未知的指令：<help " + commandArray[1]);

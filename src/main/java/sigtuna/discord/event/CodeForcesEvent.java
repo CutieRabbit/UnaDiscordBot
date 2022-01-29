@@ -12,17 +12,22 @@ import org.javacord.api.listener.message.MessageCreateListener;
 import org.javacord.api.util.NonThrowingAutoCloseable;
 import org.joda.time.DateTime;
 import sigtuna.discord.codeforces.DataBase;
+import sigtuna.discord.codeforces.RegisterData;
 import sigtuna.discord.codeforces.UserSubmissionDatabase;
 import sigtuna.discord.exception.EmbedException;
 import sigtuna.discord.main.CodeForces;
 import sigtuna.discord.util.ContestData;
 import sigtuna.discord.util.FuncEmbedBuilder;
 
+import java.awt.*;
 import java.io.File;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CodeForcesEvent implements MessageCreateListener {
 
@@ -52,8 +57,23 @@ public class CodeForcesEvent implements MessageCreateListener {
 				FuncEmbedBuilder embedBuilder =  null;
 
 				if (array_command.length == 2) {
+
 					String cfAccount = array_command[1];
+
+					Pattern nameVerification = Pattern.compile("[0-9A-Za-z\\_\\-\\.]+");
+					Matcher matcher = nameVerification.matcher(cfAccount);
+
+					if (!matcher.matches()) {
+						FuncEmbedBuilder embed = new FuncEmbedBuilder(user);
+						embed.setTitle("註冊");
+						embed.setDescription("請輸入正確的 Handle");
+						embed.setColor(Color.RED);
+						message.getChannel().sendMessage(embed);
+						return;
+					}
+
 					embedBuilder = cf.getUserEmbed(user, cfAccount);
+
 				} else if (array_command.length == 1) {
 					String userID = message.getAuthor().getIdAsString();
 					if (DataBase.UIDToAccount.containsKey(userID)) {
@@ -111,7 +131,9 @@ public class CodeForcesEvent implements MessageCreateListener {
 			}
 		} else if (array_command[0].toLowerCase().equals("<ac")){
 			try {
+
 				String account = "";
+
 				String userID = message.getAuthor().getIdAsString();
 				int year = 0, month = 0, day = 0;
 				boolean rating = false;
@@ -151,6 +173,18 @@ public class CodeForcesEvent implements MessageCreateListener {
 				}
 				if(month == 0){
 					month = dateTime.getMonthOfYear();
+				}
+
+				Pattern nameVerification = Pattern.compile("[0-9A-Za-z\\_\\-\\.]+");
+				Matcher matcher = nameVerification.matcher(account);
+
+				if (!matcher.matches()) {
+					FuncEmbedBuilder embed = new FuncEmbedBuilder(user);
+					embed.setTitle("註冊");
+					embed.setDescription("請輸入正確的 Handle");
+					embed.setColor(Color.RED);
+					message.getChannel().sendMessage(embed);
+					return;
 				}
 
 				FuncEmbedBuilder embedBuilder;
