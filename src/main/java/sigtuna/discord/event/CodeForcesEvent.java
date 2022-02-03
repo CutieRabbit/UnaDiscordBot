@@ -94,42 +94,10 @@ public class CodeForcesEvent implements MessageCreateListener {
 
 			NonThrowingAutoCloseable ntac = message.getChannel().typeContinuously();
 			ContestData.refresh();
-			message.getChannel().sendMessage(ContestData.getEmbed());
+			message.getChannel().sendMessage(ContestData.getEmbed(user));
 			ntac.close();
 
-		} else if (array_command[0].equals("<contestplay") && array_command.length == 1) {
-
-			List<Role> roleList = message.getServer().get().getRolesByName("CodeForces");
-
-			if (roleList.size() == 0) {
-				System.out.println("你需要一個名為codeforces的身分組");
-				return;
-			}
-
-			String ID = message.getServer().get().getIdAsString();
-			String CFMention = roleList.get(0).getMentionTag();
-			String channelID = message.getChannel().getIdAsString();
-
-			try {
-
-				File file = new File("./ServerBase/" + ID + "/ServerConfig.json");
-				Scanner cin = new Scanner(file);
-				String text = cin.nextLine();
-				JsonObject json = new JsonParser().parse(text).getAsJsonObject();
-				PrintWriter pw = new PrintWriter(file);
-
-				json.addProperty("CFMention", CFMention);
-				json.addProperty("CFContestChannel", channelID);
-				pw.println(json.toString());
-				pw.close();
-				cin.close();
-
-				message.getChannel().sendMessage("ok. 在這推播競賽資訊");
-
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		} else if (array_command[0].toLowerCase().equals("<ac")){
+		} else if (array_command[0].equalsIgnoreCase("<ac")){
 			try {
 
 				String account = "";

@@ -11,6 +11,7 @@ import org.javacord.api.entity.message.embed.EmbedBuilder;
 
 import cfapi.main.CodeForcesContest;
 import cfapi.main.CodeForcesContestData;
+import org.javacord.api.entity.user.User;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import sigtuna.discord.classes.Pair;
@@ -63,8 +64,8 @@ public class ContestData {
 		return time.toString("yyyy-MM-dd HH:mm");
 	}
 	
-	public static EmbedBuilder getEmbed() {
-		EmbedBuilder embed = new EmbedBuilder();
+	public static EmbedBuilder getEmbed(User user) {
+		FuncEmbedBuilder embed = new FuncEmbedBuilder(user);
 		int index = 0;
 		Collections.sort(contestList, new Comparator<Pair<Long,CodeForcesContestData>>(){
 			@Override
