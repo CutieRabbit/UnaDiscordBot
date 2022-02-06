@@ -52,7 +52,7 @@ public class Main {
 			makeProblemSet();
 
 			contest.schedule(new Contest(), 0, 60*1000);
-			rank.schedule(new CodeForcesRank(), 0, 1000*15);
+			rank.schedule(new CodeForcesRank(), 0, 1000*5);
 
 		} catch (Exception e) {
 			e.printStackTrace();

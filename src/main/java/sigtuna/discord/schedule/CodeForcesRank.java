@@ -54,29 +54,31 @@ public class CodeForcesRank extends TimerTask {
 
 			ServerUpdater serverUpdater = new ServerUpdater(server);
 
-			if(!account.equals("######")) {
-				CodeForcesUser accountData = new CodeForcesUser(account);
-				String uid = DataBase.findAccount(account);
-				User user = Main.api.getUserById(uid).get();
-				List<Role> roles = user.getRoles(server);
-				String rank = accountData.getRank().toLowerCase();
-				if(rank.equals("unrated") || rank.equalsIgnoreCase("Headquarters")){
-					return;
-				}
-				Role rankRole = roleName.get(rank);
-				if (roles.contains(rankRole)) {
-					return;
-				}
-				for (String str : roleNameArray) {
-					Role role = server.getRolesByName(str).get(0);
-						if (roles.contains(role)) {
-						serverUpdater.removeRoleFromUser(user, role);
-					}
-				}
-				System.out.println("Check user role " + user + " " + roleName.get(rank));
-				serverUpdater.addRoleToUser(user, roleName.get(rank));
+			CodeForcesUser accountData = new CodeForcesUser(account);
+			String uid = DataBase.findAccount(account);
+			User user = Main.api.getUserById(uid).get();
+			List<Role> roles = user.getRoles(server);
+			String rank = accountData.getRank().toLowerCase();
+			if(rank.equals("unrated") || rank.equalsIgnoreCase("Headquarters")){
+				return;
 			}
 
+			/* Fetch Rating */
+			int rating = (int) accountData.getRating();
+			DataBase.UIDtoRating.put(uid, rating);
+
+			Role rankRole = roleName.get(rank);
+			if (roles.contains(rankRole)) {
+				return;
+			}
+			for (String str : roleNameArray) {
+				Role role = server.getRolesByName(str).get(0);
+					if (roles.contains(role)) {
+					serverUpdater.removeRoleFromUser(user, role);
+				}
+			}
+			System.out.println("Check user role " + user + " " + roleName.get(rank));
+			serverUpdater.addRoleToUser(user, roleName.get(rank));
 			serverUpdater.update().get();
 
 		}catch (Exception e){

@@ -1,31 +1,26 @@
 package sigtuna.discord.event;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.MessageAuthor;
-import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.listener.message.MessageCreateListener;
 import org.javacord.api.util.NonThrowingAutoCloseable;
 import org.joda.time.DateTime;
 import sigtuna.discord.codeforces.DataBase;
-import sigtuna.discord.codeforces.RegisterData;
 import sigtuna.discord.codeforces.UserSubmissionDatabase;
 import sigtuna.discord.exception.EmbedException;
 import sigtuna.discord.main.CodeForces;
+import sigtuna.discord.main.Main;
 import sigtuna.discord.util.ContestData;
 import sigtuna.discord.util.FuncEmbedBuilder;
 
 import java.awt.*;
-import java.io.File;
-import java.io.PrintWriter;
-import java.util.HashMap;
+import java.io.IOException;
+import java.util.*;
 import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
+import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -174,9 +169,35 @@ public class CodeForcesEvent implements MessageCreateListener {
 				e.print();
 			}
 		}else if(array_command[0].equals("<acrank")) {
+
 			FuncEmbedBuilder funcEmbedBuilder = UserSubmissionDatabase.getACRank(user);
 			channel.sendMessage(funcEmbedBuilder);
-		}else{
+
+		}else if(array_command[0].equals("<rr")){
+
+			FuncEmbedBuilder funcEmbedBuilder = new FuncEmbedBuilder(user);
+			List<Map.Entry<String, Integer>> list = new ArrayList<>(DataBase.UIDtoRating.entrySet());
+			list.sort(Map.Entry.comparingByValue());
+			Collections.reverse(list);
+
+			funcEmbedBuilder.setColor(Color.pink);
+			funcEmbedBuilder.setTitle("Rating 排名");
+			funcEmbedBuilder.setDescription("如果沒有看到自己的，單純只是還沒更新 \n 請稍待片刻");
+
+			for(int i = 0; i < Math.min(list.size(), 25); i++){
+				try {
+					User target = Main.api.getUserById(list.get(i).getKey()).get();
+					String handle = DataBase.UIDToAccount.get(list.get(i).getKey());
+					String title = String.format("第 %d 名 - %s(%s)", (i+1), handle, target.getDiscriminatedName());
+					funcEmbedBuilder.addField(title, list.get(i).getValue().toString());
+				}catch (InterruptedException | ExecutionException e){
+					e.printStackTrace();
+				}
+			}
+
+			channel.sendMessage(funcEmbedBuilder);
+
+		} else {
 			return;
 		}
 		message.delete();

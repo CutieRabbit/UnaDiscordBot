@@ -18,6 +18,7 @@ import java.util.concurrent.ExecutionException;
 public class DataBase {
 	
 	public static Map<String,String> UIDToAccount = new HashMap<>();
+	public static Map<String, Integer> UIDtoRating = new HashMap<>();
 	public static Map<String, Integer> monthSolveRecord = new HashMap<>();
 
 	public static void load() {
