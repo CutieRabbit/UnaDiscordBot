@@ -17,6 +17,15 @@ public class EmbedException extends Exception {
         embedBuilder.setColor(Color.red);
         this.textChannel = textChannel;
     }
+    public EmbedException(User user, String title, String description){
+        embedBuilder = new FuncEmbedBuilder(user);
+        embedBuilder.setTitle(title);
+        embedBuilder.setDescription(description);
+        embedBuilder.setColor(Color.red);
+    }
+    public FuncEmbedBuilder getEmbedBuilder(){
+        return embedBuilder;
+    }
     public void print(){
         textChannel.sendMessage(embedBuilder);
     }

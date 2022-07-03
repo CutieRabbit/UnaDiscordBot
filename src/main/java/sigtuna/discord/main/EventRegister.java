@@ -19,7 +19,6 @@ public class EventRegister {
 		api.addReactionAddListener(new EmbedDeleteReactionEvent());
 		api.addMessageCreateListener(new AutoAddEmbedRemoveEmojiEvent());
 		api.addMessageCreateListener(new WhoTheFuckMentionMeEvent());
-		api.addMessageCreateListener(new WeatherEvent());
 	}
 
 }

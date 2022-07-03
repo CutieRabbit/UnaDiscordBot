@@ -68,16 +68,20 @@ public class CodeForcesRank extends TimerTask {
 			DataBase.UIDtoRating.put(uid, rating);
 
 			Role rankRole = roleName.get(rank);
+
 			if (roles.contains(rankRole)) {
 				return;
 			}
+
+			System.out.println("Check user role " + user + " " + roleName.get(rank));
+
 			for (String str : roleNameArray) {
 				Role role = server.getRolesByName(str).get(0);
-					if (roles.contains(role)) {
+				if (roles.contains(role)) {
 					serverUpdater.removeRoleFromUser(user, role);
 				}
 			}
-			System.out.println("Check user role " + user + " " + roleName.get(rank));
+
 			serverUpdater.addRoleToUser(user, roleName.get(rank));
 			serverUpdater.update().get();
 

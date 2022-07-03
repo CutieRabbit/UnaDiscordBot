@@ -3,7 +3,7 @@ package sigtuna.discord.message;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 
-public class Messager {
+public class MessageSender {
 
 	public static void sendMessage(Message message, String str) {
 

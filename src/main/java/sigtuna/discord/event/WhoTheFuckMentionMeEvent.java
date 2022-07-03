@@ -51,6 +51,7 @@ public class WhoTheFuckMentionMeEvent implements MessageCreateListener {
         TextChannel WTFMM_channel = findWTFMM_channel(list);
 
         if(WTFMM_channel == null) return;
+        if(!author.asUser().isPresent()) return;
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle("Who the fuck mentioned me v2.0");

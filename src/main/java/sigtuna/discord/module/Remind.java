@@ -6,6 +6,7 @@ import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import sigtuna.discord.main.Main;
 
 import java.awt.*;
@@ -37,7 +38,7 @@ public class Remind extends TimerTask{
 	public void run() {
 		try {
 			EmbedBuilder embed = new EmbedBuilder();
-			SimpleDateFormat sdf = new SimpleDateFormat();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd aa hh:mm");
 			String timeString = sdf.format(date);
 			String mentionTag = api.getUserById(userID).get().getMentionTag();
 			embed.setDescription("給" + mentionTag + "的提醒");
@@ -67,7 +68,12 @@ public class Remind extends TimerTask{
 			String thing = contentSplit[6];
 			String user = message.getAuthor().getIdAsString();
 
-			DateTime dateTime = new DateTime(year, month, day, hour, min, 0, 0);
+			DateTimeZone zone = DateTimeZone.getDefault();
+			DateTimeZone taipei_zone = DateTimeZone.forID("Asia/Taipei");
+			int diff_hour = (taipei_zone.toTimeZone().getRawOffset() - zone.toTimeZone().getRawOffset()) / (1000 * 60 * 60);
+			System.out.println(diff_hour);
+
+			DateTime dateTime = new DateTime(year, month, day, hour, min, 0, 0).minusHours(diff_hour);
 			long second = dateTime.getMillis();
 
 			if (second - System.currentTimeMillis() < 0) {
@@ -75,19 +81,19 @@ public class Remind extends TimerTask{
 				EmbedBuilder embed = new EmbedBuilder();
 				embed.setTitle("你設定的時間已經逾時，無法提醒");
 				channel.sendMessage(embed);
-				return;
-				
+
 			} else {
 
 				Timer timer = new Timer();
-				SimpleDateFormat sdf = new SimpleDateFormat();
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd aa hh:mm");
 				EmbedBuilder embed = new EmbedBuilder();
-
+				DateTime currentTime = DateTime.now();
 				timer.schedule(new Remind(event.getChannel(), user, thing, dateTime.toDate(), Main.api), dateTime.toDate());
 				embed.setTitle("新增提醒");
 				embed.setColor(Color.GREEN);
 				embed.setDescription(thing);
-				embed.setFooter(sdf.format(dateTime.toDate()));
+				embed.addField("提醒時間", sdf.format(dateTime.plusHours(diff_hour).toDate()));
+				embed.setFooter(sdf.format(currentTime.plusHours(diff_hour).toDate()));
 
 				channel.sendMessage(embed);
 			}

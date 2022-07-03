@@ -86,12 +86,14 @@ public class CodeForcesEvent implements MessageCreateListener {
 			}
 
 		} else if (array_command[0].equals("<cfcontest") && array_command.length == 1) {
-
-			NonThrowingAutoCloseable ntac = message.getChannel().typeContinuously();
-			ContestData.refresh();
-			message.getChannel().sendMessage(ContestData.getEmbed(user));
-			ntac.close();
-
+			try {
+				NonThrowingAutoCloseable ntac = message.getChannel().typeContinuously();
+				ContestData.refresh();
+				message.getChannel().sendMessage(ContestData.getEmbed(user));
+				ntac.close();
+			}catch (IOException | FontFormatException e){
+				e.printStackTrace();
+			}
 		} else if (array_command[0].equalsIgnoreCase("<ac")){
 			try {
 

@@ -1,5 +1,8 @@
 package sigtuna.discord.util;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -64,7 +67,7 @@ public class ContestData {
 		return time.toString("yyyy-MM-dd HH:mm");
 	}
 	
-	public static EmbedBuilder getEmbed(User user) {
+	public static EmbedBuilder getEmbed(User user) throws IOException, FontFormatException {
 		FuncEmbedBuilder embed = new FuncEmbedBuilder(user);
 		int index = 0;
 		Collections.sort(contestList, new Comparator<Pair<Long,CodeForcesContestData>>(){
@@ -85,7 +88,32 @@ public class ContestData {
 			embed.addField(contestName, getTime(relative) + " - " + getTimeString(startTime) + " - " + getTime(duration));
 			index++;
 		}
+		embed.setImage(getContestImage());
 		return embed;
+	}
+
+	public static BufferedImage getContestImage() throws IOException, FontFormatException {
+		DateTime dateTime = DateTime.now();
+		int dayOfWeek = (dateTime.getDayOfWeek() + 1) % 7;
+		dateTime = dateTime.minusDays(dayOfWeek);
+
+		String[] dateTimeString = new String[7];
+		String[] event = new String[7];
+
+		for(int i = 0; i < 7; i++){
+			DateTime temp = dateTime.plusDays(i);
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd");
+			event[i] = "休息";
+			dateTimeString[i] = simpleDateFormat.format(temp.toDate());
+			for(Pair<Long, CodeForcesContestData> pair : contestList){
+				if(temp.getMillis() / 1000 < pair.value.getStartTimeSeconds() && pair.value.getStartTimeSeconds() < temp.plusDays(1).getMillis() / 1000){
+					event[i] = pair.value.getName();
+				}
+			}
+		}
+
+		return BufferedImageUtil.contestImageDraw(dateTimeString, event);
+
 	}
 
 }

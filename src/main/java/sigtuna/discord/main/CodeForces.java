@@ -7,6 +7,7 @@ import org.javacord.api.entity.user.User;
 
 import sigtuna.discord.classes.UserStatus;
 import sigtuna.discord.codeforces.UserSubmissionDatabase;
+import sigtuna.discord.util.BufferedImageUtil;
 import sigtuna.discord.util.FuncEmbedBuilder;
 
 import java.awt.*;
@@ -71,6 +72,7 @@ public class CodeForces {
 			}
 
 			embed.setColor(Color.magenta);
+			embed.setImage(BufferedImageUtil.userProfileImageDraw(userData));
 
 		} catch (NoUserException e) {
 
